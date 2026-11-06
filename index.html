@@ -2,150 +2,389 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNI - Roleta de Atenção Primária à Saúde</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Roleta da Saúde Mental</title>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --bg-beige: #f5f0e6;
+      --bg-gradient: radial-gradient(circle at 50% 20%, #f0fdf9 0%, #f8fafc 60%, #e2e8f0 100%);
       --card-white: #ffffff;
-      --gray-light: #f1f5f9;
-      --gray-border: #e2e8f0;
-      --primary: #107361;
-      --primary-hover: #0a4d40;
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
       --accent: #d97706;
-      --danger: #dc2626;
-      --text-dark: #1e293b;
+      --accent-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --text-dark: #0f172a;
       --text-muted: #64748b;
+      --border-color: rgba(226, 232, 240, 0.9);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+      --shadow-wheel: 0 25px 50px -12px rgba(15, 23, 42, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.8);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     html, body {
       width: 100%;
-      height: 100%;
-      background-color: var(--bg-beige);
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg-gradient);
       color: var(--text-dark);
       overflow-x: hidden;
+      overscroll-behavior: none;
     }
 
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 8px 16px;
+      justify-content: space-between;
+      padding: clamp(8px, 1.8vh, 16px) clamp(10px, 2vw, 20px);
+      touch-action: manipulation;
     }
 
-    .main-wrapper {
+    /* Container Principal Totalmente Adaptativo */
+    .tablet-screen {
       width: 100%;
-      max-width: 1600px;
+      max-width: 1200px;
+      flex: 1;
+      height: 100%;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: clamp(8px, 1.5vh, 14px);
+      position: relative;
+    }
+
+    /* Header Adaptativo e Fluido */
+    .tablet-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: clamp(8px, 1.4vh, 12px) clamp(12px, 2vw, 22px);
+      border-radius: clamp(14px, 2vw, 20px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+      gap: 12px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 14px);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-img {
+      height: clamp(34px, 5vh, 46px);
+      width: auto;
+      max-width: clamp(120px, 18vw, 165px);
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+      transition: transform 0.2s ease;
+    }
+
+    .brand-divider {
+      width: 1.5px;
+      height: clamp(24px, 4vh, 34px);
+      background: #cbd5e1;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text-dark);
+      line-height: 1.15;
+    }
+
+    .brand-text p {
+      font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+      line-height: 1.1;
+    }
+
+    /* ========================================================
+       PLACAR SUPERIOR EM CHIPS (DESIGN MODERNO & MINIMALISTA)
+       ======================================================== */
+    .stats-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1.2vw, 12px);
+      flex-wrap: nowrap;
+    }
+
+    .stat-chip {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: clamp(10px, 1.5vw, 14px);
+      padding: clamp(5px, 0.9vh, 7px) clamp(8px, 1.2vw, 14px);
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1vw, 10px);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .stat-chip:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Ícone circular elegante em vetor */
+    .stat-badge-icon {
+      width: clamp(26px, 3.5vw, 32px);
+      height: clamp(26px, 3.5vw, 32px);
+      border-radius: clamp(7px, 1vw, 9px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-badge-icon.icon-success {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .stat-badge-icon.icon-danger {
+      background: #fff1f2;
+      color: #e11d48;
+    }
+
+    .stat-badge-icon.icon-prize {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .stat-chip-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-chip-label {
+      font-size: clamp(0.56rem, 0.88vw, 0.64rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .stat-chip-val {
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-weight: 800;
+      line-height: 1;
+      color: #0f172a;
+    }
+
+    .stat-chip.hits-chip .stat-chip-val {
+      color: #059669;
+    }
+
+    .stat-chip.misses-chip .stat-chip-val {
+      color: #e11d48;
+    }
+
+    /* Chip de Meta de Brinde */
+    .stat-chip.prize-chip {
+      background: #ffffff;
+      border: 1px solid #fde68a;
+      box-shadow: 0 1px 3px rgba(245, 158, 11, 0.06);
+    }
+
+    .prize-title-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 3px;
+    }
+
+    .prize-streak-tag {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: clamp(0.52rem, 0.8vw, 0.58rem);
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      padding: 1.5px 5px;
+      border-radius: 5px;
+      line-height: 1;
+    }
+
+    /* Cápsulas de progresso do brinde */
+    .prize-dots-container {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prize-dot, .prize-pill {
+      width: clamp(13px, 1.8vw, 18px);
+      height: clamp(5px, 0.8vw, 7px);
+      border-radius: 999px;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .prize-dot.active, .prize-pill.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #059669;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+      transform: scaleY(1.2);
+    }
+
+    .stat-chip.prize-chip.is-complete {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+    }
+
+    .stat-chip.prize-chip.is-complete .prize-dot.active,
+    .stat-chip.prize-chip.is-complete .prize-pill.active {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #d97706;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    }
+
+    .prize-alert-banner {
+      background: #ecfdf5;
+      border: 2px dashed #059669;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #065f46;
+      margin: 16px 0;
+      line-height: 1.4;
+    }
+
+    .btn-continue-prize {
+      background: linear-gradient(135deg, #059669, #0d9488);
+      color: #ffffff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .btn-continue-prize:active {
+      transform: scale(0.96);
+    }
+
+    /* Caixa e Barra de Contagem Regressiva do Brinde */
+    .prize-countdown-box {
+      margin: 14px 0 16px;
+      padding: 12px 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 8px;
     }
 
-    header {
-      background-color: var(--card-white);
-      padding: 10px 24px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    header h1 {
-      font-size: 1.7rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: var(--primary);
-    }
-
-    /* Navegação */
-    .nav-tabs {
-      display: flex;
-      background-color: var(--card-white);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .nav-tab {
-      flex: 1;
-      text-align: center;
-      padding: 9px;
+    .prize-countdown-text {
       font-size: 0.95rem;
       font-weight: 700;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-      border: none;
-      background: transparent;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .nav-tab:hover {
-      background-color: #f8fafc;
-      color: var(--text-dark);
+    .prize-countdown-num {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 2px 9px;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 1.15rem;
+      min-width: 32px;
+      display: inline-block;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .nav-tab.active {
-      background-color: var(--primary);
-      color: #ffffff;
-    }
-
-    .tab-content {
-      display: none;
+    .prize-progress-track {
       width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
     }
 
-    .tab-content.active {
-      display: block;
+    .prize-progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 999px;
+      transition: width 1s linear;
     }
 
-    /* Palco com Fundo Branco */
-    .stage-container {
-      position: relative;
+    /* Arena Central da Roleta Totalmente Adaptativa */
+    .tablet-arena {
+      flex: 1;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--card-white);
-      padding: 20px;
-      border-radius: 22px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      min-height: calc(100vh - 125px);
+      position: relative;
+      min-height: 0;
+      padding: clamp(6px, 1.5vh, 12px);
     }
 
-    /* Roleta Tela Inteira */
+    /* Moldura da Roleta (Escala fluida considerando altura e largura) */
     .wheel-outer-rim {
       position: relative;
-      width: min(840px, 78vh);
-      height: min(840px, 78vh);
+      width: min(600px, min(80vmin, 62vh));
+      height: min(600px, min(80vmin, 62vh));
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
-      background: #e2e8f0;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.15), 0 15px 40px rgba(0,0,0,0.18);
-      padding: 24px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-    }
-
-    .rim-stud {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #ffffff 30%, #94a3b8 90%);
-      border: 2px solid #64748b;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     canvas#wheelCanvas {
@@ -153,185 +392,193 @@
       height: 100%;
       border-radius: 50%;
       display: block;
+      /* Sombra de leve, suave e moderna */
+      box-shadow: 0 14px 35px -4px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
     }
 
-    /* Ponteiro Superior */
-    .wheel-top-crest {
+    /* Ponteiro Superior Esculpido com Física de Batida */
+    .wheel-pointer-container {
       position: absolute;
-      top: -16px;
+      top: clamp(-20px, -3.5vmin, -25px);
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 42px;
-      background: #e2e8f0;
-      border-radius: 10px 10px 0 0;
+      transform-origin: 50% 16px;
+      width: clamp(34px, 7vmin, 44px);
+      height: clamp(44px, 9vmin, 58px);
+      z-index: 25;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 -3px 6px rgba(0,0,0,0.15);
-      z-index: 20;
+      filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.28));
+      transition: transform 0.07s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
     }
 
-    .pointer-triangle {
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-top: 36px solid #334155;
-      position: absolute;
-      top: 15px;
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.25));
+    .pointer-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
     }
 
-    /* Botão Central: Contorno Branco e sem imagem */
+    /* ========================================================
+       BOTÃO CENTRAL GIRAR (Minimalista & Proporcional)
+       ======================================================== */
     .wheel-spin-hub {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 135px;
-      height: 135px;
-      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #f8fafc 60%, #e2e8f0 100%);
-      border: 6px solid #ffffff;
+      width: clamp(80px, 20vmin, 120px);
+      height: clamp(80px, 20vmin, 120px);
       border-radius: 50%;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      background: #ffffff;
+      border: clamp(2px, 0.5vmin, 3.5px) solid #f1f5f9;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.06);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 30;
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      text-align: center;
-      padding: 12px;
-      user-select: none;
-      animation: pulseGlow 2s infinite ease-in-out;
+      outline: none;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, background 0.18s ease;
     }
 
     .wheel-spin-hub:hover {
-      transform: translate(-50%, -50%) scale(1.08);
-      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ecfdf5 70%, #d1fae5 100%);
-      box-shadow: 0 12px 30px rgba(16, 115, 97, 0.35), 0 0 0 2px #ffffff;
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+      border-color: #e2e8f0;
     }
 
     .wheel-spin-hub:active {
       transform: translate(-50%, -50%) scale(0.95);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
     }
 
-    .wheel-spin-hub span.text {
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: #107361;
-      line-height: 1.25;
+    .wheel-spin-hub .hub-main-text {
+      font-size: clamp(0.82rem, 2.3vmin, 1.15rem);
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: clamp(1px, 0.4vmin, 2.5px);
       text-transform: uppercase;
+      line-height: 1;
+      transition: color 0.18s ease;
+    }
+
+    .wheel-spin-hub:hover .hub-main-text {
+      color: #0d9488;
+    }
+
+    /* Estado quando a roleta está girando */
+    .wheel-spin-hub.is-spinning {
+      pointer-events: none;
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      transform: translate(-50%, -50%) scale(0.97);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .wheel-spin-hub.is-spinning .hub-main-text {
+      color: #94a3b8;
+      font-size: clamp(0.72rem, 2vmin, 0.95rem);
       letter-spacing: 1px;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { 
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6), 0 8px 25px rgba(0,0,0,0.25);
-      }
-      50% { 
-        box-shadow: 0 0 0 12px rgba(255, 255, 255, 0), 0 10px 30px rgba(0,0,0,0.3);
-      }
-    }
-
-    /* Cards no Canto Superior Direito */
-    .top-right-panel {
-      position: absolute;
-      top: 20px;
-      right: 24px;
+    /* Rodapé Adaptativo */
+    .tablet-footer-bar {
+      width: 100%;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
       z-index: 10;
-      width: 220px;
     }
 
-    .stat-card {
-      background-color: var(--gray-light);
-      border: 1px solid var(--gray-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      border-left: 5px solid var(--primary);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-
-    .stat-card.questions-card {
-      border-left-color: #3b82f6;
-    }
-
-    .stat-title {
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .stat-value {
-      font-size: 1.55rem;
-      font-weight: 900;
-      color: var(--text-dark);
-      line-height: 1.1;
-    }
-
-    .stat-value span {
-      font-size: 0.95rem;
+    .tablet-footer-tip {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: clamp(7px, 1.2vh, 9px) clamp(12px, 1.8vw, 18px);
+      border-radius: 14px;
+      font-size: clamp(0.78rem, 1.2vw, 0.88rem);
       font-weight: 700;
-      color: var(--primary);
-      margin-left: 3px;
-    }
-
-    /* Botão Reiniciar no Canto Inferior Direito */
-    .bottom-right-panel {
-      position: absolute;
-      bottom: 20px;
-      right: 24px;
-      z-index: 10;
-    }
-
-    .btn-reset-bottom {
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 800;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background-color: #64748b;
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
+      color: #64748b;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .btn-reset-bottom:hover {
-      background-color: #475569;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    /* Botão Reiniciar no Rodapé */
+    .btn-footer-reset {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: clamp(6px, 1vh, 7px) clamp(12px, 1.6vw, 16px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      text-align: left;
     }
 
-    .btn-reset-bottom:active {
-      transform: scale(0.96);
+    .btn-footer-reset:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+      transform: translateY(-1px);
     }
 
-    /* Modal de Perguntas */
+    .btn-footer-reset:hover .icon-reset svg {
+      transform: rotate(-180deg);
+    }
+
+    .btn-footer-reset:active {
+      transform: scale(0.97);
+      background: #f8fafc;
+    }
+
+    .stat-badge-icon.icon-reset {
+      background: #f1f5f9;
+      color: #475569;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .stat-badge-icon.icon-reset svg {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-footer-reset:hover .stat-badge-icon.icon-reset {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-footer-reset .reset-val {
+      font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    /* ========================================================
+       MODAL DE PERGUNTA PARA TABLET (Touch-First & Confortável)
+       ======================================================== */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 500;
-      padding: 20px;
-      backdrop-filter: blur(4px);
+      padding: 24px;
     }
 
     .modal-overlay.active {
@@ -340,105 +587,145 @@
 
     .modal-box {
       background: #ffffff;
-      color: var(--text-dark);
-      border-radius: 24px;
-      max-width: 720px;
+      border-radius: 28px;
+      max-width: 800px;
       width: 100%;
-      padding: 32px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-      animation: modalSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes modalSlide {
-      from { transform: translateY(35px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-theme {
-      display: inline-block;
-      padding: 5px 12px;
-      background: #e6fffa;
-      color: #0f766e;
-      font-weight: 800;
-      font-size: 0.9rem;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-
-    .modal-level {
-      display: inline-block;
-      padding: 5px 12px;
-      background: #fef3c7;
-      color: #b45309;
-      font-weight: 800;
-      font-size: 0.9rem;
-      border-radius: 20px;
-      margin-bottom: 10px;
-      margin-left: 6px;
-    }
-
-    .modal-question {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      line-height: 1.4;
-      color: #0f172a;
-    }
-
-    .modal-options {
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 32px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      animation: modalPop 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
+      gap: 18px;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header-badges {
+      display: flex;
+      align-items: center;
       gap: 10px;
     }
 
-    .option-btn {
-      text-align: left;
-      padding: 14px 18px;
-      border: 2px solid #e2e8f0;
+    .badge-theme {
+      background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+      color: #0f766e;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 6px 14px;
       border-radius: 12px;
+      border: 1px solid rgba(13, 148, 136, 0.2);
+    }
+
+    .modal-question {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    .modal-options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .touch-option-btn {
+      width: 100%;
       background: #f8fafc;
-      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       cursor: pointer;
-      transition: all 0.2s;
-      color: #334155;
+      text-align: left;
+      font-size: 1.05rem;
       font-weight: 600;
+      color: #1e293b;
       line-height: 1.35;
+      transition: all 0.18s ease;
+      min-height: 60px;
     }
 
-    .option-btn:hover {
-      background: #edf2f7;
+    .touch-option-btn:hover:not(:disabled) {
+      background: #f1f5f9;
       border-color: #cbd5e1;
-      transform: translateX(4px);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
     }
 
-    .option-btn.correct {
-      background: #dcfce7 !important;
-      border-color: #22c55e !important;
-      color: #15803d !important;
-      font-weight: bold;
+    .touch-option-btn:active:not(:disabled) {
+      transform: scale(0.98);
+      background: #e2e8f0;
     }
 
-    .option-btn.wrong {
-      background: #fee2e2 !important;
+    .option-letter-badge {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      background: #e2e8f0;
+      color: #334155;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+    }
+
+    .touch-option-btn.correct {
+      background: #ecfdf5 !important;
+      border-color: #10b981 !important;
+      color: #065f46 !important;
+    }
+
+    .touch-option-btn.correct .option-letter-badge {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .touch-option-btn.wrong {
+      background: #fef2f2 !important;
       border-color: #ef4444 !important;
-      color: #b91c1c !important;
-      font-weight: bold;
+      color: #991b1b !important;
+      animation: shake 0.4s ease;
     }
 
-    /* Popups Especiais */
+    .touch-option-btn.wrong .option-letter-badge {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* ========================================================
+       POPUP DE FEEDBACK (Tablet Full Experience)
+       ======================================================== */
     .popup-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-      backdrop-filter: blur(5px);
+      z-index: 600;
+      padding: 24px;
     }
 
     .popup-overlay.active {
@@ -447,485 +734,1175 @@
 
     .popup-card {
       background: #ffffff;
-      color: var(--text-dark);
-      border-radius: 24px;
-      max-width: 600px;
+      border-radius: 28px;
+      padding: 36px 40px;
+      max-width: 580px;
       width: 100%;
-      padding: 36px 30px;
       text-align: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+      animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes popIn {
-      from { transform: scale(0.7); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .popup-card h2 {
-      font-size: 2.1rem;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .motivational-quote-highlight {
-      font-size: 1.55rem;
-      font-weight: 700;
-      color: #0f766e;
-      line-height: 1.45;
-      margin-bottom: 10px;
-      padding: 18px 20px;
-      background: #f0fdfa;
-      border-radius: 14px;
-      border: 1px solid #ccfbf1;
-    }
-
-    .error-x-icon {
-      width: 75px;
-      height: 75px;
-      margin: 0 auto 14px;
+    .feedback-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      font-size: 2.8rem;
+    }
+
+    .feedback-icon-wrap.success {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .feedback-icon-wrap.error {
       background: #fee2e2;
-      animation: shake 0.4s ease-in-out;
+      color: #dc2626;
     }
 
-    .error-x-icon svg {
-      width: 46px;
-      height: 46px;
-      stroke: #ef4444;
-      stroke-width: 3.5;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
-
-    /* Ranking e Configurações */
-    .tab-card {
-      background-color: var(--card-white);
-      padding: 24px;
-      border-radius: 18px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .rank-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      margin-bottom: 20px;
-    }
-
-    .rank-table th, .rank-table td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--gray-border);
-    }
-
-    .rank-table th {
-      background-color: var(--gray-light);
-      color: var(--primary);
+    .popup-title {
+      font-size: 1.6rem;
       font-weight: 800;
-    }
-
-    .rank-table tr:nth-child(even) {
-      background-color: #fafaf9;
-    }
-
-    .badge-pos {
-      font-weight: bold;
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      line-height: 28px;
-      text-align: center;
-      border-radius: 50%;
-      background: #cbd5e1;
-      color: #334155;
-    }
-
-    .badge-pos.top-1 { background: #fef08a; color: #854d0e; }
-    .badge-pos.top-2 { background: #e2e8f0; color: #475569; }
-    .badge-pos.top-3 { background: #fed7aa; color: #9a3412; }
-
-    .config-group {
-      background-color: var(--gray-light);
-      padding: 18px;
-      border-radius: 14px;
-      margin-bottom: 20px;
-      border: 1px solid var(--gray-border);
-    }
-
-    .config-group h3 {
       margin-bottom: 12px;
-      color: var(--primary);
+      color: var(--text-dark);
     }
 
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .feedback-quote {
+      background: #f0fdfa;
+      border-left: 5px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 14px;
       font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 12px;
-      cursor: pointer;
+      color: #0f766e;
+      line-height: 1.45;
+      margin-top: 14px;
+      text-align: left;
     }
 
-    .checkbox-label input {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary);
-      cursor: pointer;
+    .popup-score-summary {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 10px;
     }
 
-    .btn-action-tab {
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 800;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background-color: var(--danger);
-      color: #ffffff;
-      transition: all 0.2s;
+    .popup-score-summary strong {
+      color: var(--text-dark);
     }
 
-    .btn-action-tab:hover {
-      background-color: #b91c1c;
-    }
+    /* ========================================================
+       SISTEMA RESPONSIVO & ADAPTATIVO COMPLETO (Mobile, Tablet, Desktop)
+       ======================================================== */
 
-    @media (max-width: 900px) {
-      .top-right-panel {
-        position: relative;
-        top: 0;
-        right: 0;
-        width: 100%;
-        flex-direction: row;
-        margin-bottom: 15px;
+    /* Tablet Vertical / Telas Médias (<= 920px) */
+    @media (max-width: 920px) {
+      .tablet-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 16px;
       }
-      .stat-card {
-        flex: 1;
-      }
-      .bottom-right-panel {
-        position: relative;
-        bottom: 0;
-        right: 0;
-        width: 100%;
-        margin-top: 15px;
-      }
-      .btn-reset-bottom {
+      .brand-title {
         width: 100%;
         justify-content: center;
       }
-      .stage-container {
-        flex-direction: column;
+      .stats-group {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Smartphones & Telas Pequenas (<= 640px) */
+    @media (max-width: 640px) {
+      body {
+        padding: 8px 10px;
+      }
+      .tablet-header {
+        padding: 8px 12px;
+        gap: 8px;
+        border-radius: 14px;
+      }
+      .brand-title {
+        gap: 8px;
+      }
+      .brand-logo-img {
+        height: 32px;
+      }
+      .brand-divider {
+        height: 24px;
+      }
+      .brand-text h1 {
+        font-size: 1.05rem;
+      }
+      .brand-text p {
+        display: none; /* Oculta subtítulo em telas compactas para economizar espaço vertical */
+      }
+
+      /* Chips compactos e fluídos para caberem lado a lado */
+      .stats-group {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+      }
+      .stat-chip {
+        flex: 1;
+        padding: 5px 6px;
+        gap: 6px;
+        justify-content: center;
+        border-radius: 10px;
+      }
+      .stat-badge-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+      }
+      .stat-badge-icon svg {
+        width: 12px;
+        height: 12px;
+      }
+      .stat-chip-label {
+        font-size: 0.52rem;
+        margin-bottom: 1px;
+      }
+      .stat-chip-val {
+        font-size: 0.98rem;
+      }
+      .prize-streak-tag {
+        font-size: 0.48rem;
+        padding: 1px 4px;
+      }
+      .prize-dot, .prize-pill {
+        width: 11px;
+        height: 4.5px;
+      }
+
+      /* Rodapé no Mobile */
+      .tablet-footer-bar {
+        flex-direction: column-reverse;
+        gap: 6px;
+      }
+      .tablet-footer-tip {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+      }
+      .btn-footer-reset {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 14px;
+      }
+
+      /* Modal de Pergunta no Mobile */
+      .modal-box {
+        padding: 18px 16px;
+        border-radius: 20px;
+        gap: 12px;
+        max-height: 88dvh;
+      }
+      .modal-question {
+        font-size: 1.1rem;
+        line-height: 1.35;
+      }
+      .touch-option-btn {
+        padding: 11px 12px;
+        min-height: 48px;
+        font-size: 0.92rem;
+        border-radius: 14px;
+        gap: 10px;
+      }
+      .option-letter-badge {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        font-size: 0.92rem;
+      }
+
+      /* Popup de Feedback no Mobile */
+      .popup-card {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+      .feedback-icon-wrap {
+        width: 60px;
+        height: 60px;
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+      }
+      .popup-title {
+        font-size: 1.35rem;
+      }
+    }
+
+    /* Modo Paisagem Compacto (Smartphones deitados ou telas com altura reduzida <= 560px) */
+    @media (max-height: 560px) and (orientation: landscape) {
+      body {
+        padding: 4px 12px;
+      }
+      .tablet-screen {
+        gap: 6px;
+      }
+      .tablet-header {
+        padding: 4px 14px;
+        flex-direction: row;
+      }
+      .brand-logo-img {
+        height: 28px;
+      }
+      .brand-text p {
+        display: none;
+      }
+      .brand-text h1 {
+        font-size: 0.95rem;
+      }
+      .wheel-outer-rim {
+        width: min(320px, 58vh);
+        height: min(320px, 58vh);
+      }
+      .tablet-footer-tip {
+        display: none; /* Em modo paisagem curto, prioriza o espaço para a roleta */
+      }
+      .tablet-footer-bar {
+        justify-content: center;
+      }
+      .btn-footer-reset {
+        padding: 4px 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="main-wrapper">
-    <header>
-      <h1>CNI - Roleta de Atenção Primária à Saúde</h1>
+  <div class="tablet-screen">
+
+    <!-- Header do Tablet (Sem abas!) -->
+    <header class="tablet-header">
+      <div class="brand-title">
+        <img src="ss_LogoComBox.svg" onerror="this.onerror=null; this.src='https://sesisaudedf.org.br/wp-content/uploads/2024/02/ss_LogoComBox.svg';" alt="SESI Saúde" class="brand-logo-img">
+        <div class="brand-divider"></div>
+        <div class="brand-text">
+          <h1>Roleta da Saúde Mental</h1>
+          <p>Gire a roleta e teste seus conhecimentos</p>
+        </div>
+      </div>
+
+      <div class="stats-group">
+        <!-- Chip de Acertos -->
+        <div class="stat-chip hits-chip" title="Total de acertos na sessão">
+          <div class="stat-badge-icon icon-success">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <span class="stat-chip-label">Acertos</span>
+            <span class="stat-chip-val" id="hits-counter">0</span>
+          </div>
+        </div>
+
+        <!-- Chip de Erros -->
+        <div class="stat-chip misses-chip" title="Total de erros na sessão">
+          <div class="stat-badge-icon icon-danger">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <span class="stat-chip-label">Erros</span>
+            <span class="stat-chip-val" id="misses-counter">0</span>
+          </div>
+        </div>
+
+        <!-- Chip Meta do Brinde (3 seguidas) -->
+        <div class="stat-chip prize-chip" id="prize-chip" title="Acerte 3 perguntas seguidas para ganhar o brinde!">
+          <div class="stat-badge-icon icon-prize">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 12 20 22 4 22 4 12"></polyline>
+              <rect x="2" y="7" width="20" height="5"></rect>
+              <line x1="12" y1="22" x2="12" y2="7"></line>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <div class="prize-title-row">
+              <span class="stat-chip-label">Brinde</span>
+              <span class="prize-streak-tag">3 seguidas</span>
+            </div>
+            <div class="prize-dots-container">
+              <span class="prize-pill" id="p-dot-1" title="Acerto 1 de 3"></span>
+              <span class="prize-pill" id="p-dot-2" title="Acerto 2 de 3"></span>
+              <span class="prize-pill" id="p-dot-3" title="Acerto 3 de 3"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <nav class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('roleta')">🎡 Roleta</button>
-      <button class="nav-tab" onclick="switchTab('rank')">🏆 Rank</button>
-      <button class="nav-tab" onclick="switchTab('config')">⚙️ Configurações</button>
-    </nav>
-
-    <!-- ABA 1: ROLETA -->
-    <div id="tab-roleta" class="tab-content active">
-      <div class="stage-container">
-        
-        <!-- Cards no Canto Superior Direito -->
-        <div class="top-right-panel">
-          <div class="stat-card">
-            <div class="stat-title">Pontuação Total</div>
-            <div class="stat-value" id="current-score">0 <span>pts</span></div>
-          </div>
-          <div class="stat-card questions-card">
-            <div class="stat-title">Perguntas Respondidas</div>
-            <div class="stat-value" id="q-counter">0</div>
-          </div>
+    <!-- Arena Central com a Roleta -->
+    <main class="tablet-arena">
+      <div class="wheel-outer-rim" id="rimContainer" onclick="spinWheel()">
+        <!-- Ponteiro no topo com animação de tick -->
+        <div class="wheel-pointer-container" id="wheelPointer">
+          <svg class="pointer-svg" viewBox="0 0 40 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="pointerGrad" x1="20" y1="4" x2="20" y2="52" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fb7185"/>
+                <stop offset="45%" stop-color="#f43f5e"/>
+                <stop offset="100%" stop-color="#be123c"/>
+              </linearGradient>
+            </defs>
+            <!-- Corpo esculpido da seta -->
+            <path d="M 20 52 C 18.5 49, 8 22, 8 16 A 12 12 0 1 1 32 16 C 32 22, 21.5 49, 20 52 Z" 
+                  fill="url(#pointerGrad)" 
+                  stroke="#ffffff" 
+                  stroke-width="2.5" 
+                  stroke-linejoin="round"/>
+            <!-- Brilho de reflexo superior -->
+            <path d="M 14 14 A 6 6 0 0 1 26 14" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- Pino central pivot -->
+            <circle cx="20" cy="16" r="5" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1"/>
+            <circle cx="20" cy="16" r="2.5" fill="#be123c"/>
+          </svg>
         </div>
 
-        <!-- Roleta Tela Inteira -->
-        <div class="wheel-outer-rim" id="rimContainer" onclick="spinWheel()">
-          <div class="wheel-top-crest">
-            <div class="pointer-triangle"></div>
-          </div>
-          <canvas id="wheelCanvas" width="900" height="900"></canvas>
-          
-          <!-- Botão Central: Contorno Branco e sem Imagem -->
-          <div class="wheel-spin-hub" onclick="event.stopPropagation(); spinWheel();" title="Clique para girar a roleta">
-            <span class="text">Gire a<br>Roleta</span>
-          </div>
-        </div>
+        <!-- Canvas 900x900 em alta resolução -->
+        <canvas id="wheelCanvas" width="900" height="900"></canvas>
 
-        <!-- Botão Reiniciar no Canto Inferior Direito -->
-        <div class="bottom-right-panel">
-          <button class="btn-reset-bottom" onclick="resetGame(true)">
-            🔄 Reiniciar
-          </button>
+        <!-- Botão Central: Minimalista e Sem Emoji -->
+        <div class="wheel-spin-hub" id="spinHubBtn" onclick="event.stopPropagation(); spinWheel();" title="Toque para girar a roleta">
+          <span class="hub-main-text" id="hubMainText">Girar</span>
         </div>
-
       </div>
-    </div>
+    </main>
 
-    <!-- ABA 2: RANK -->
-    <div id="tab-rank" class="tab-content">
-      <div class="tab-card">
-        <h2 style="margin-bottom: 12px; color: var(--primary);">🏆 Top 10 Maiores Pontuações</h2>
-        <table class="rank-table">
-          <thead>
-            <tr>
-              <th style="width: 60px;">Pos.</th>
-              <th>Pontuação</th>
-              <th>Data e Hora</th>
-            </tr>
-          </thead>
-          <tbody id="rank-tbody"></tbody>
-        </table>
-        <button class="btn-action-tab" onclick="clearRank()">🗑️ Zerar Rank</button>
+    <!-- Rodapé do Tablet com Dica e Botão Reiniciar Reposicionado -->
+    <footer class="tablet-footer-bar">
+      <div class="tablet-footer-tip">
+        <span>💡</span>
+        <span>Toque no botão <strong>GIRAR</strong> ou na roleta para sortear uma pergunta!</span>
       </div>
-    </div>
 
-    <!-- ABA 3: CONFIGURAÇÕES -->
-    <div id="tab-config" class="tab-content">
-      <div class="tab-card">
-        <h2 style="margin-bottom: 12px; color: var(--primary);">⚙️ Configurações do Jogo</h2>
-        <div class="config-group">
-          <h3>Níveis de Dificuldade Ativos</h3>
-          <label class="checkbox-label">
-            <input type="checkbox" id="cfg-lvl-1" checked onchange="handleConfigChange()">
-            Nível 1 — Fácil
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="cfg-lvl-2" checked onchange="handleConfigChange()">
-            Nível 2 — Médio
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="cfg-lvl-3" checked onchange="handleConfigChange()">
-            Nível 3 — Difícil
-          </label>
+      <button class="btn-footer-reset" onclick="resetGame(true)" title="Reiniciar jogo e zerar placar">
+        <div class="stat-badge-icon icon-reset">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M8 16H3v5"></path>
+          </svg>
         </div>
-        <button class="btn-action-tab" onclick="resetConfig()">🔄 Zerar / Restaurar Padrões</button>
-      </div>
-    </div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Ação</span>
+          <span class="stat-chip-val reset-val">Reiniciar Jogo</span>
+        </div>
+      </button>
+    </footer>
+
   </div>
 
-  <!-- MODAL DE PERGUNTA -->
+  <!-- MODAL DE PERGUNTAS (Touch Friendly para Tablet) -->
   <div id="questionModal" class="modal-overlay">
     <div class="modal-box">
-      <div>
-        <span id="modalTheme" class="modal-theme">Tema</span>
-        <span id="modalLevel" class="modal-level">Nível 1</span>
+      <div class="modal-header-badges">
+        <span id="modalTheme" class="badge-theme">Tema</span>
       </div>
-      <div id="modalQuestionText" class="modal-question">Pergunta aqui</div>
-      <div id="modalOptions" class="modal-options"></div>
+      <div id="modalQuestionText" class="modal-question">Carregando pergunta...</div>
+      <div id="modalOptions" class="modal-options-grid"></div>
     </div>
   </div>
 
-  <!-- POPUP DE FEEDBACK -->
+  <!-- POPUP DE FEEDBACK (Confetes, Pontuação e Motivação) -->
   <div id="feedbackPopup" class="popup-overlay">
     <div id="popupCard" class="popup-card"></div>
   </div>
 
   <script>
     // ==========================================
-    // 1. BANCO DE 90 PERGUNTAS (APS - CNI)
+    // 1. BANCO DE PERGUNTAS - ROLETA DA SAÚDE MENTAL
     // ==========================================
     const allQuestions = [
-      // 1. AUTOCUIDADO - NÍVEL 1
-      { nivel: 1, tema: "Autocuidado", pergunta: "Qual prática diária simples é considerada essencial para a prevenção de infecções e manutenção da higiene básica?", opcoes: ["Lavar as mãos adequadamente com água e sabão", "Tomar banho exclusivamente uma vez por semana", "Evitar escovar os dentes após as refeições principais", "Utilizar roupas úmidas durante longos períodos"], resposta_correta_texto: "Lavar as mãos adequadamente com água e sabão" },
-      { nivel: 1, tema: "Autocuidado", pergunta: "Em relação à hidratação corporal, qual é a principal recomendação para o dia a dia?", opcoes: ["Beber água regularmente ao longo do dia, conforme as necessidades individuais", "Substituir toda a ingestão de água por refrigerantes açucarados", "Beber água apenas quando sentir tontura extrema", "Evitar qualquer líquido antes de realizar esforço físico leve"], resposta_correta_texto: "Beber água regularmente ao longo do dia, conforme as necessidades individuais" },
-      { nivel: 1, tema: "Autocuidado", pergunta: "Para manter uma rotina de sono saudável (higiene do sono), recomenda-se:", opcoes: ["Consumir bebidas com alta concentração de cafeína logo antes de deitar", "Manter o quarto escuro, silencioso e estabelecer horários regulares para dormir", "Utilizar telas brilhantes na cama até adormecer por exaustão", "Praticar exercícios físicos de alta intensidade minutos antes de dormir"], resposta_correta_texto: "Manter o quarto escuro, silencioso e estabelecer horários regulares para dormir" },
-      { nivel: 1, tema: "Autocuidado", pergunta: "A prática regular de atividade física traz como benefício comprovado ao autocuidado:", opcoes: ["Aumento descontrolado do estresse diário", "Melhora do condicionamento cardiovascular e da disposição física", "Redução imediata da capacidade pulmonar", "Aumento obrigatório da pressão arterial em repouso"], resposta_correta_texto: "Melhora do condicionamento cardiovascular e da disposição física" },
-      { nivel: 1, tema: "Autocuidado", pergunta: "Qual atitude em relação ao uso de medicamentos reflete uma prática segura de autocuidado?", opcoes: ["Compartilhar antibióticos que sobraram com vizinhos e parentes", "Seguir a prescrição e as orientações dos profissionais de saúde da UBS", "Alterar as doses diárias por conta própria sem aviso prévio", "Interromper tratamentos contínuos assim que os sintomas melhorarem no primeiro dia"], resposta_correta_texto: "Seguir a prescrição e as orientações dos profissionais de saúde da UBS" },
-      
-      // 1. AUTOCUIDADO - NÍVEL 2
-      { nivel: 2, tema: "Autocuidado", pergunta: "No contexto da promoção da saúde na APS, o conceito de \"autocuidado apoiado\" significa:", opcoes: ["Deixar o paciente totalmente sozinho na tomada de decisões terapêuticas", "Capacitar e instrumentalizar o indivíduo para que gerencie ativamente sua saúde em parceria com a equipe multiprofissional", "Transferir toda a responsabilidade dos tratamentos para os familiares", "Obrigar o usuário a realizar exames invasivos domiciliares sem orientação"], resposta_correta_texto: "Capacitar e instrumentalizar o indivíduo para que gerencie ativamente sua saúde em parceria com a equipe multiprofissional" },
-      { nivel: 2, tema: "Autocuidado", pergunta: "O Guia Alimentar para a População Brasileira recomenda que a base da alimentação cotidiana seja composta por:", opcoes: ["Alimentos ultraprocessados ricos em conservantes", "Alimentos in natura ou minimamente processados", "Suplementos vitamínicos industrializados em cápsulas", "Produtos exclusivamente refinados e embutidos"], resposta_correta_texto: "Alimentos in natura ou minimamente processados" },
-      { nivel: 2, tema: "Autocuidado", pergunta: "A exposição solar segura para a síntese adequada de vitamina D deve considerar:", opcoes: ["Exposição em horários de pico solar sem qualquer proteção na pele clara por horas", "Exposição moderada de braços e pernas em horários adequados ou uso de protetor solar nas atividades prolongadas", "Utilização de bronzeadores caseiros à base de folhas vegetais", "Proibição absoluta de contato com a luz solar em qualquer faixa etária"], resposta_correta_texto: "Exposição moderada de braços e pernas em horários adequados ou uso de protetor solar nas atividades prolongadas" },
-      { nivel: 2, tema: "Autocuidado", pergunta: "Na saúde bucal, o uso diário do fio dental é fundamental porque:", opcoes: ["Substitui integralmente a necessidade da escovação mecânica", "Remove a placa bacteriana e restos alimentares nas superfícies interdentais onde a escova não alcança", "Serve unicamente para clarear o esmalte dentário", "Deve ser utilizado apenas na presença de sangramento gengival ativo"], resposta_correta_texto: "Remove a placa bacteriana e restos alimentares nas superfícies interdentais onde a escova não alcança" },
-      { nivel: 2, tema: "Autocuidado", pergunta: "O automonitoramento de sintomas corporais (como alterações na pele, padrão intestinal e peso) é útil para:", opcoes: ["Autoprescrever remédios fortes sem avaliação clínica", "Identificar precocemente alterações e buscar orientação qualificada na UBS quando necessário", "Gerar diagnósticos laboratoriais instantâneos", "Eliminar a necessidade de comparecer a consultas de rotina"], resposta_correta_texto: "Identificar precocemente alterações e buscar orientação qualificada na UBS quando necessário" },
+      // CATEGORIA 1 – Emoções e sentimentos
+      {
+        nivel: 1,
+        tema: "Emoções e Sentimentos",
+        pergunta: "Qual é uma maneira saudável de lidar com a raiva?",
+        opcoes: [
+          "Descontar a raiva em outras pessoas.",
+          "Guardar tudo até não aguentar mais.",
+          "Reconhecer o que está sentindo e buscar uma forma adequada de expressar a emoção.",
+          "Fingir que nada aconteceu."
+        ],
+        resposta_correta_texto: "Reconhecer o que está sentindo e buscar uma forma adequada de expressar a emoção."
+      },
+      {
+        nivel: 1,
+        tema: "Emoções e Sentimentos",
+        pergunta: "Sentir tristeza em alguns momentos significa que uma pessoa tem depressão?",
+        opcoes: [
+          "Sim, toda tristeza é depressão.",
+          "Não, a tristeza é uma emoção natural, mas quando é persistente e interfere na vida pode indicar a necessidade de avaliação.",
+          "Sim, principalmente durante a adolescência.",
+          "Não, porque adolescentes não desenvolvem depressão."
+        ],
+        resposta_correta_texto: "Não, a tristeza é uma emoção natural, mas quando é persistente e interfere na vida pode indicar a necessidade de avaliação."
+      },
+      {
+        nivel: 2,
+        tema: "Emoções e Sentimentos",
+        pergunta: "O que é autoestima?",
+        opcoes: [
+          "A maneira como uma pessoa percebe e valoriza a si mesma.",
+          "A quantidade de amigos que uma pessoa possui.",
+          "A capacidade de agradar a todas as pessoas.",
+          "A preocupação constante com a aparência."
+        ],
+        resposta_correta_texto: "A maneira como uma pessoa percebe e valoriza a si mesma."
+      },
+      {
+        nivel: 2,
+        tema: "Emoções e Sentimentos",
+        pergunta: "Qual atitude demonstra inteligência emocional?",
+        opcoes: [
+          "Nunca demonstrar sentimentos.",
+          "Evitar qualquer situação de conflito.",
+          "Reconhecer as próprias emoções e procurar lidar com elas de maneira equilibrada.",
+          "Sempre colocar os sentimentos dos outros acima dos seus."
+        ],
+        resposta_correta_texto: "Reconhecer as próprias emoções e procurar lidar com elas de maneira equilibrada."
+      },
+      {
+        nivel: 3,
+        tema: "Emoções e Sentimentos",
+        pergunta: "Por que é importante falar sobre os próprios sentimentos?",
+        opcoes: [
+          "Para chamar a atenção das pessoas.",
+          "Para evitar qualquer tipo de responsabilidade.",
+          "Porque demonstrar sentimentos é sinal de fraqueza.",
+          "Porque ajuda a compreender as emoções e pode facilitar a busca por apoio."
+        ],
+        resposta_correta_texto: "Porque ajuda a compreender as emoções e pode facilitar a busca por apoio."
+      },
+      {
+        nivel: 3,
+        tema: "Emoções e Sentimentos",
+        pergunta: "O que pode acontecer quando uma pessoa tenta esconder constantemente suas emoções?",
+        opcoes: [
+          "Ela deixa de sentir emoções negativas.",
+          "Pode acumular sofrimento e ter dificuldades para lidar com o que sente.",
+          "Desenvolve maior inteligência emocional.",
+          "Resolve seus problemas sem precisar conversar."
+        ],
+        resposta_correta_texto: "Pode acumular sofrimento e ter dificuldades para lidar com o que sente."
+      },
 
-      // 1. AUTOCUIDADO - NÍVEL 3
-      { nivel: 3, tema: "Autocuidado", pergunta: "Segundo a Teoria do Déficit de Autocuidado formulada pela teórica de enfermagem Dorothea Orem, a intervenção profissional é indicada quando:", opcoes: ["O indivíduo atinge a independência completa em todas as suas atividades", "A demanda de autocuidado terapêutico do indivíduo excede sua capacidade (agência) de supri-la", "O paciente se recusa a seguir qualquer recomendação higiênica", "O sistema público de saúde encerra os atendimentos preventivos"], resposta_correta_texto: "A demanda de autocuidado terapêutico do indivíduo excede sua capacidade (agência) de supri-la" },
-      { nivel: 3, tema: "Autocuidado", pergunta: "No Modelo Transteórico de Mudança de Comportamento (Prochaska e DiClemente), o estágio em que o indivíduo reconhece o problema e pretende mudar nos próximos meses, mas ainda não iniciou ações práticas, é denominado:", opcoes: ["Pré-contemplação", "Contemplação", "Manutenção", "Recaída definitiva"], resposta_correta_texto: "Contemplação" },
-      { nivel: 3, tema: "Autocuidado", pergunta: "O conceito de \"Letramento em Saúde\" (Health Literacy) no autocuidado refere-se:", opcoes: ["Apenas à capacidade do usuário de assinar o termo de consentimento livre e esclarecido", "Ao grau em que indivíduos têm a capacidade de obter, processar e compreender informações básicas de saúde para tomar decisões apropriadas", "Ao número de bulas de medicamentos que o paciente memoriza", "À habilidade exclusiva dos profissionais em redigir prescrições médicas legíveis"], resposta_correta_texto: "Ao grau em que indivíduos têm a capacidade de obter, processar e compreender informações básicas de saúde para tomar decisões apropriadas" },
-      { nivel: 3, tema: "Autocuidado", pergunta: "Na abordagem dos 5 As (Avaliar, Aconselhar, Acordar, Apoiar e Acompanhar) para cessação do tabagismo na APS, a etapa \"Acordar\" envolve:", opcoes: ["Estabelecer metas conjuntas e um plano de ação realista baseado na prontidão do paciente para mudar", "Prescrever reposição de nicotina sem a concordância do fumante", "Interromper o contato caso o paciente apresente fissura no primeiro dia", "Avaliar apenas o histórico de doenças pulmonares na infância"], resposta_correta_texto: "Estabelecer metas conjuntas e um plano de ação realista baseado na prontidão do paciente para mudar" },
-      { nivel: 3, tema: "Autocuidado", pergunta: "As Práticas Integrativas e Complementares em Saúde (PICS) disponibilizadas na APS, como Tai Chi Chuan, Yoga e Fitoterapia, têm como mecanismo principal no autocuidado:", opcoes: ["Substituir integralmente os tratamentos de quimioterapia oncológica", "Estimular o autocuidado, o autoconhecimento, a redução do estresse e o fortalecimento do vínculo terapêutico com o próprio corpo", "Impor restrições dietéticas severas a toda a comunidade", "Funcionar como método diagnóstico exclusivo para doenças genéticas"], resposta_correta_texto: "Estimular o autocuidado, o autoconhecimento, a redução do estresse e o fortalecimento do vínculo terapêutico com o próprio corpo" },
+      // CATEGORIA 2 – Amizades e relacionamentos
+      {
+        nivel: 1,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "Qual característica é fundamental em uma amizade saudável?",
+        opcoes: [
+          "Competição constante.",
+          "Controle sobre as escolhas do outro.",
+          "Respeito, confiança e reciprocidade.",
+          "Necessidade de estar junto o tempo inteiro."
+        ],
+        resposta_correta_texto: "Respeito, confiança e reciprocidade."
+      },
+      {
+        nivel: 1,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "O que fazer quando um amigo conta algo pessoal e demonstra estar sofrendo?",
+        opcoes: [
+          "Ouvir com atenção, sem julgamentos, e incentivar a busca por ajuda quando necessário.",
+          "Contar para todos os colegas.",
+          "Ignorar o assunto para não se envolver.",
+          "Fazer piadas para tentar mudar o humor dele."
+        ],
+        resposta_correta_texto: "Ouvir com atenção, sem julgamentos, e incentivar a busca por ajuda quando necessário."
+      },
+      {
+        nivel: 2,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "Em um relacionamento saudável, é importante:",
+        opcoes: [
+          "Aceitar todas as vontades da outra pessoa.",
+          "Ter liberdade, respeito e limites individuais.",
+          "Compartilhar todas as senhas pessoais.",
+          "Evitar amizades com outras pessoas."
+        ],
+        resposta_correta_texto: "Ter liberdade, respeito e limites individuais."
+      },
+      {
+        nivel: 2,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "O que significa praticar empatia?",
+        opcoes: [
+          "Concordar com tudo que os outros dizem.",
+          "Resolver os problemas de outras pessoas.",
+          "Evitar demonstrar opiniões diferentes.",
+          "Tentar compreender os sentimentos e as perspectivas de outras pessoas."
+        ],
+        resposta_correta_texto: "Tentar compreender os sentimentos e as perspectivas de outras pessoas."
+      },
+      {
+        nivel: 3,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "Qual situação pode indicar uma relação de amizade prejudicial?",
+        opcoes: [
+          "Um amigo respeitar sua opinião.",
+          "Dois amigos terem opiniões diferentes.",
+          "Uma pessoa humilhar, controlar ou diminuir constantemente a outra.",
+          "Um amigo precisar de um tempo sozinho."
+        ],
+        resposta_correta_texto: "Uma pessoa humilhar, controlar ou diminuir constantemente a outra."
+      },
+      {
+        nivel: 3,
+        tema: "Amizades e Relacionamentos",
+        pergunta: "Por que estabelecer limites nas relações é importante?",
+        opcoes: [
+          "Porque ajuda a preservar o respeito, o bem-estar e a individualidade.",
+          "Porque impede que as pessoas criem vínculos.",
+          "Porque demonstra falta de interesse pelos outros.",
+          "Porque evita qualquer tipo de discussão."
+        ],
+        resposta_correta_texto: "Porque ajuda a preservar o respeito, o bem-estar e a individualidade."
+      },
 
-      // 2. SAÚDE DA MULHER - NÍVEL 1
-      { nivel: 1, tema: "Saúde da Mulher", pergunta: "O exame preventivo de colo de útero (Papanicolau/citopatológico) tem como principal objetivo na Atenção Primária:", opcoes: ["Detectar precocemente alterações celulares que podem levar ao câncer de colo do útero", "Verificar o índice de massa corporal (IMC)", "Medir a pressão intraocular para prevenir glaucoma", "Tratar crises asmáticas agudas"], resposta_correta_texto: "Detectar precocemente alterações celulares que podem levar ao câncer de colo do útero" },
-      { nivel: 1, tema: "Saúde da Mulher", pergunta: "O pré-natal realizado na Unidade Básica de Saúde tem como função:", opcoes: ["Acompanhar o desenvolvimento do bebê e a saúde da gestante, prevenindo complicações", "Determinar a internação cirúrgica imediata no primeiro mês de gravidez", "Impedir o parto normal em qualquer situação clínica", "Evitar a realização de testes rápidos para infecções"], resposta_correta_texto: "Acompanhar o desenvolvimento do bebê e a saúde da gestante, prevenindo complicações" },
-      { nivel: 1, tema: "Saúde da Mulher", pergunta: "Qual método contraceptivo de barreira atua simultaneamente na prevenção da gravidez não planejada e de Infecções Sexualmente Transmissíveis (ISTs)?", opcoes: ["Pílula anticoncepcional oral combinada", "Dispositivo intrauterino (DIU) de cobre", "Preservativo (camisinha masculina ou feminina)", "Implante subdérmico de progestagênio"], resposta_correta_texto: "Preservativo (camisinha masculina ou feminina)" },
-      { nivel: 1, tema: "Saúde da Mulher", pergunta: "Durante o período de aleitamento materno exclusivo, a Organização Mundial da Saúde recomenda amamentação até:", opcoes: ["O primeiro mês de vida apenas", "Os 6 meses de vida, sem necessidade de água ou chás", "1 ano de vida, complementado com leite de vaca desde a primeira semana", "3 meses de vida, iniciando sucos artificiais no segundo mês"], resposta_correta_texto: "Os 6 meses de vida, sem necessidade de água ou chás" },
-      { nivel: 1, tema: "Saúde da Mulher", pergunta: "O autoexame ou autoconhecimento das mamas serve para a mulher:", opcoes: ["Conhecer o próprio corpo e identificar alterações visuais ou nódulos palpáveis para buscar avaliação profissional", "Dispensar a necessidade de mamografia de rastreamento na faixa etária recomendada", "Curar infecções mamárias agudas", "Substituir qualquer consulta médica de rotina"], resposta_correta_texto: "Conhecer o próprio corpo e identificar alterações visuais ou nódulos palpáveis para buscar avaliação profissional" },
+      // CATEGORIA 3 – Redes sociais e autoestima
+      {
+        nivel: 1,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "Como as redes sociais podem influenciar a autoestima?",
+        opcoes: [
+          "Não possuem nenhuma influência sobre a autoestima.",
+          "Podem estimular comparações com padrões de vida e aparência irreais.",
+          "Sempre melhoram a confiança pessoal.",
+          "Impedem que as pessoas desenvolvam inseguranças."
+        ],
+        resposta_correta_texto: "Podem estimular comparações com padrões de vida e aparência irreais."
+      },
+      {
+        nivel: 1,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "O que é cyberbullying?",
+        opcoes: [
+          "Uma discussão presencial entre colegas.",
+          "Uma brincadeira realizada em sala de aula.",
+          "O uso da internet para estudar e pesquisar.",
+          "A prática de agressões, humilhações ou ameaças por meios digitais."
+        ],
+        resposta_correta_texto: "A prática de agressões, humilhações ou ameaças por meios digitais."
+      },
+      {
+        nivel: 2,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "Qual atitude é mais adequada ao receber uma mensagem ofensiva na internet?",
+        opcoes: [
+          "Responder com ameaças.",
+          "Compartilhar a mensagem para aumentar a discussão.",
+          "Guardar evidências, bloquear o agressor e procurar ajuda de alguém de confiança.",
+          "Criar uma conta falsa para se vingar."
+        ],
+        resposta_correta_texto: "Guardar evidências, bloquear o agressor e procurar ajuda de alguém de confiança."
+      },
+      {
+        nivel: 2,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "Por que não devemos comparar nossa aparência com a de pessoas nas redes sociais?",
+        opcoes: [
+          "Porque muitas imagens passam por filtros, edições e escolhas que não mostram a realidade completa.",
+          "Porque todas as pessoas das redes sociais são falsas.",
+          "Porque as fotografias publicadas representam sempre a aparência real das pessoas, sem alterações.",
+          "Porque a aparência não tem nenhuma relação com a autoestima."
+        ],
+        resposta_correta_texto: "Porque muitas imagens passam por filtros, edições e escolhas que não mostram a realidade completa."
+      },
+      {
+        nivel: 3,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "Qual pode ser um sinal de uso prejudicial das redes sociais?",
+        opcoes: [
+          "Conversar com amigos pela internet.",
+          "Utilizar aplicativos para estudar.",
+          "Compartilhar momentos de lazer.",
+          "Deixar de dormir ou prejudicar atividades importantes por permanecer conectado."
+        ],
+        resposta_correta_texto: "Deixar de dormir ou prejudicar atividades importantes por permanecer conectado."
+      },
+      {
+        nivel: 3,
+        tema: "Redes Sociais e Autoestima",
+        pergunta: "O que é importante lembrar ao observar a vida de outras pessoas nas redes sociais?",
+        opcoes: [
+          "Que todas as pessoas possuem uma vida perfeita.",
+          "Que as publicações mostram apenas recortes da realidade, e não necessariamente a vida completa.",
+          "Que a quantidade de curtidas determina o valor de alguém.",
+          "Que ter muitos seguidores significa ter boa saúde mental."
+        ],
+        resposta_correta_texto: "Que as publicações mostram apenas recortes da realidade, e não necessariamente a vida completa."
+      },
 
-      // 2. SAÚDE DA MULHER - NÍVEL 2
-      { nivel: 2, tema: "Saúde da Mulher", pergunta: "Conforme as diretrizes do Ministério da Saúde, a faixa etária recomendada para o rastreamento mamográfico bienal do câncer de mama em mulheres assintomáticas é:", opcoes: ["25 a 39 anos", "50 a 69 anos", "70 a 85 anos", "15 a 24 anos"], resposta_correta_texto: "50 a 69 anos" },
-      { nivel: 2, tema: "Saúde da Mulher", pergunta: "A suplementação com ácido fólico na fase periconcepcional (antes e no início da gestação) é fundamental para prevenir:", opcoes: ["Defeitos de fechamento do tubo neural no feto (como anencefalia e espinha bífida)", "Luxação congênita do quadril", "Hipotireoidismo materno congênito", "Retinopatia da prematuridade precoce"], resposta_correta_texto: "Defeitos de fechamento do tubo neural no feto (como anencefalia e espinha bífida)" },
-      { nivel: 2, tema: "Saúde da Mulher", pergunta: "A vacina dTpa (tríplice bacteriana acelular do tipo adulto) é indicada para gestantes a partir da 20ª semana com a finalidade de proteger o recém-nascido contra:", opcoes: ["Coqueluche, difteria e tétano", "Rubéola, caxumba e sarampo", "Hepatite B, meningite e febre amarela", "Dengue, zika e chikungunya"], resposta_correta_texto: "Coqueluche, difteria e tétano" },
-      { nivel: 2, tema: "Saúde da Mulher", pergunta: "No manejo da Sífilis em gestantes na Atenção Primária, o medicamento de escolha para o tratamento adequado tanto da mãe quanto para a prevenção da sífilis congênita é:", opcoes: ["Penicilina G Benzatina", "Amoxicilina em suspensão oral", "Azitromicina dose única", "Ciprofloxacino injetável"], resposta_correta_texto: "Penicilina G Benzatina" },
-      { nivel: 2, tema: "Saúde da Mulher", pergunta: "O climatério é a fase de transição entre o período reprodutivo e o não reprodutivo da mulher. Um dos sintomas vasomotores mais característicos dessa fase é:", opcoes: ["As ondas de calor (\"fogachos\") e suores noturnos", "O aumento permanente do fluxo menstrual contínuo", "A perda total e irreversível da audição", "A ausência definitiva de alterações hormonais"], resposta_correta_texto: "As ondas de calor (\"fogachos\") e suores noturnos" },
+      // CATEGORIA 4 – Ansiedade e estresse
+      {
+        nivel: 1,
+        tema: "Ansiedade e Estresse",
+        pergunta: "O que é ansiedade?",
+        opcoes: [
+          "Uma emoção que só aparece em pessoas adultas.",
+          "Uma doença que todas as pessoas possuem.",
+          "Uma resposta emocional relacionada à antecipação de situações ou possíveis ameaças.",
+          "Uma sensação que acontece apenas durante provas."
+        ],
+        resposta_correta_texto: "Uma resposta emocional relacionada à antecipação de situações ou possíveis ameaças."
+      },
+      {
+        nivel: 1,
+        tema: "Ansiedade e Estresse",
+        pergunta: "Qual situação pode aumentar o estresse entre adolescentes?",
+        opcoes: [
+          "Ter uma rotina com horários e atividades variadas.",
+          "Precisar conciliar responsabilidades escolares, expectativas familiares e pouco tempo livre.",
+          "Reservar momentos de descanso entre as atividades.",
+          "Conversar com pessoas de confiança sobre as dificuldades do dia a dia."
+        ],
+        resposta_correta_texto: "Precisar conciliar responsabilidades escolares, expectativas familiares e pouco tempo livre."
+      },
+      {
+        nivel: 2,
+        tema: "Ansiedade e Estresse",
+        pergunta: "Qual estratégia pode ajudar a controlar a ansiedade em momentos de tensão?",
+        opcoes: [
+          "Praticar respiração consciente e procurar se concentrar no momento presente.",
+          "Evitar dormir para terminar todas as tarefas.",
+          "Ignorar o que está sentindo.",
+          "Aumentar o consumo de bebidas energéticas."
+        ],
+        resposta_correta_texto: "Praticar respiração consciente e procurar se concentrar no momento presente."
+      },
+      {
+        nivel: 2,
+        tema: "Ansiedade e Estresse",
+        pergunta: "Sentir ansiedade antes de uma apresentação na escola é:",
+        opcoes: [
+          "Um sinal de transtorno mental.",
+          "Uma situação que exige sempre medicação.",
+          "Uma prova de falta de preparo.",
+          "Uma reação que pode ser normal diante de uma situação desafiadora."
+        ],
+        resposta_correta_texto: "Uma reação que pode ser normal diante de uma situação desafiadora."
+      },
+      {
+        nivel: 3,
+        tema: "Ansiedade e Estresse",
+        pergunta: "Qual é uma consequência possível do estresse prolongado?",
+        opcoes: [
+          "Melhora da memória.",
+          "Ausência de cansaço físico.",
+          "Dificuldades de concentração, alterações no sono e irritabilidade.",
+          "Aumento da autoestima."
+        ],
+        resposta_correta_texto: "Dificuldades de concentração, alterações no sono e irritabilidade."
+      },
+      {
+        nivel: 3,
+        tema: "Ansiedade e Estresse",
+        pergunta: "Quando a ansiedade começa a prejudicar a rotina de um adolescente, qual atitude é mais indicada?",
+        opcoes: [
+          "Esconder os sintomas dos familiares.",
+          "Procurar apoio de um adulto de confiança e, se necessário, de um profissional de saúde.",
+          "Evitar todas as atividades escolares.",
+          "Esperar que os sintomas desapareçam sozinhos."
+        ],
+        resposta_correta_texto: "Procurar apoio de um adulto de confiança e, se necessário, de um profissional de saúde."
+      },
 
-      // 2. SAÚDE DA MULHER - NÍVEL 3
-      { nivel: 3, tema: "Saúde da Mulher", pergunta: "Segundo as Diretrizes Brasileiras para o Rastreamento do Câncer do Colo do Útero, qual é a conduta após o resultado de ASC-US (células escamosas atípicas de significado indeterminado, possivelmente não neoplásicas) em uma mulher com 35 anos?", opcoes: ["Encaminhamento imediato para colposcopia e biópsia", "Repetição do exame citopatológico em 6 meses na UBS", "Conização imediata do colo uterino", "Alta do programa de rastreamento preventivo"], resposta_correta_texto: "Repetição do exame citopatológico em 6 meses na UBS" },
-      { nivel: 3, tema: "Saúde da Mulher", pergunta: "No rastreamento de Diabetes Mellitus Gestacional (DMG), de acordo com os critérios da Organização Mundial da Saúde e Ministério da Saúde, o diagnóstico é confirmado no primeiro trimestre se a glicemia de jejum estiver entre:", opcoes: ["70 e 84 mg/dL", "92 e 125 mg/dL", "140 e 180 mg/dL", "60 e 69 mg/dL"], resposta_correta_texto: "92 e 125 mg/dL" },
-      { nivel: 3, tema: "Saúde da Mulher", pergunta: "De acordo com os Critérios de Elegibilidade Médica da OMS para uso de Métodos Anticoncepcionais, os Anticoncepcionais Orais Combinados (AOC) são classificados como Categoria 4 (risco inaceitável à saúde) para:", opcoes: ["Mulheres com 25 anos sem comorbidades", "Mulheres com mais de 35 anos que fumam 15 ou mais cigarros por dia", "Mulheres com histórico de cólicas menstruais leves", "Nulíparas sem histórico de eventos trombóticos"], resposta_correta_texto: "Mulheres com mais de 35 anos que fumam 15 ou mais cigarros por dia" },
-      { nivel: 3, tema: "Saúde da Mulher", pergunta: "A investigação laboratorial de rotina para pré-eclâmpsia grave na gestação inclui a identificação de trombocitopenia e elevação de enzimas hepáticas. Essa complicação grave associada à hemólise é chamada de:", opcoes: ["Síndrome de Turner", "Síndrome HELLP", "Síndrome de Sheehan", "Síndrome de Cushing"], resposta_correta_texto: "Síndrome HELLP" },
-      { nivel: 3, tema: "Saúde da Mulher", pergunta: "No acolhimento a mulheres em situação de violência sexual na APS, o prazo máximo recomendado para a administração da profilaxia pós-exposição (PEP) para HIV e início da contracepção de emergência é de:", opcoes: ["Até 72 horas após o evento", "Até 30 dias após o evento", "Exclusivamente nas primeiras 2 horas", "Apenas após a emissão do boletim de ocorrência policial"], resposta_correta_texto: "Até 72 horas após o evento" },
+      // CATEGORIA 5 – Autocuidado e hábitos saudáveis
+      {
+        nivel: 1,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "Por que dormir bem é importante para a saúde mental?",
+        opcoes: [
+          "Porque elimina todos os problemas emocionais.",
+          "Porque substitui a necessidade de lazer.",
+          "Porque ajuda na memória, na concentração e na regulação das emoções.",
+          "Porque impede que uma pessoa sinta ansiedade."
+        ],
+        resposta_correta_texto: "Porque ajuda na memória, na concentração e na regulação das emoções."
+      },
+      {
+        nivel: 1,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "Qual é a importância da atividade física para a saúde mental?",
+        opcoes: [
+          "Pode contribuir para o bem-estar, reduzir o estresse e melhorar o humor.",
+          "Serve apenas para melhorar a aparência física.",
+          "Substitui o acompanhamento psicológico.",
+          "Elimina definitivamente a possibilidade de depressão."
+        ],
+        resposta_correta_texto: "Pode contribuir para o bem-estar, reduzir o estresse e melhorar o humor."
+      },
+      {
+        nivel: 2,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "O que é autocuidado?",
+        opcoes: [
+          "Preocupar-se apenas com a aparência.",
+          "Evitar responsabilidades.",
+          "Fazer somente aquilo que dá prazer.",
+          "Adotar atitudes que favoreçam o bem-estar físico e emocional."
+        ],
+        resposta_correta_texto: "Adotar atitudes que favoreçam o bem-estar físico e emocional."
+      },
+      {
+        nivel: 2,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "Qual hábito pode prejudicar a saúde mental?",
+        opcoes: [
+          "Manter horários regulares de sono.",
+          "Passar noites frequentemente sem dormir o suficiente.",
+          "Reservar tempo para atividades de lazer.",
+          "Conversar com pessoas de confiança."
+        ],
+        resposta_correta_texto: "Passar noites frequentemente sem dormir o suficiente."
+      },
+      {
+        nivel: 3,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "Por que ter momentos de lazer é importante?",
+        opcoes: [
+          "Porque ajuda a diminuir tensões e proporciona prazer e descanso.",
+          "Porque elimina todas as responsabilidades.",
+          "Porque impede o surgimento de emoções negativas.",
+          "Porque substitui a necessidade de convivência social."
+        ],
+        resposta_correta_texto: "Porque ajuda a diminuir tensões e proporciona prazer e descanso."
+      },
+      {
+        nivel: 3,
+        tema: "Autocuidado e Hábitos Saudáveis",
+        pergunta: "Qual alternativa apresenta um conjunto de hábitos que favorecem a saúde mental?",
+        opcoes: [
+          "Dormir pouco, evitar atividades físicas e passar o dia conectado.",
+          "Ignorar o cansaço e priorizar apenas os estudos.",
+          "Manter uma alimentação equilibrada, dormir adequadamente, praticar atividades físicas e cultivar relações saudáveis.",
+          "Evitar momentos de descanso para aproveitar melhor o tempo."
+        ],
+        resposta_correta_texto: "Manter uma alimentação equilibrada, dormir adequadamente, praticar atividades físicas e cultivar relações saudáveis."
+      },
 
-      // 3. SAÚDE DO HOMEM - NÍVEL 1
-      { nivel: 1, tema: "Saúde do Homem", pergunta: "Uma das principais barreiras para o cuidado integral da saúde masculina na Atenção Primária é:", opcoes: ["A excessiva procura por serviços de saúde em fases preventivas", "O preconceito, a ideia de invulnerabilidade e a busca por atendimento apenas em estágios avançados", "A restrição legal de entrada de homens nas Unidades Básicas de Saúde", "A obrigatoriedade de acompanhamento semanal por assistentes sociais"], resposta_correta_texto: "O preconceito, a ideia de invulnerabilidade e a busca por atendimento apenas em estágios avançados" },
-      { nivel: 1, tema: "Saúde do Homem", pergunta: "Qual campanha anual realizada no mês de novembro busca conscientizar a população sobre a importância da prevenção e do diagnóstico precoce das doenças masculinas, com ênfase no câncer de próstata?", opcoes: ["Outubro Rosa", "Novembro Azul", "Setembro Amarelo", "Dezembro Vermelho"], resposta_correta_texto: "Novembro Azul" },
-      { nivel: 1, tema: "Saúde do Homem", pergunta: "Qual atitude é altamente benéfica para a saúde cardiovascular e geral do homem?", opcoes: ["Parar de fumar e praticar exercícios físicos regulares", "Dobrar o consumo de bebidas alcoólicas destiladas diariamente", "Evitar aferir a pressão arterial ao longo da vida", "Abandonar dietas ricas em fibras e verduras"], resposta_correta_texto: "Parar de fumar e praticar exercícios físicos regulares" },
-      { nivel: 1, tema: "Saúde do Homem", pergunta: "O uso de preservativo nas relações sexuais é fundamental para o homem porque:", opcoes: ["Apenas melhora a circulação sanguínea periférica", "Previne a transmissão e infecção por Infecções Sexualmente Transmissíveis (ISTs), como HIV, sífilis e hepatites", "Garante a cura de doenças crônicas como diabetes", "Torna desnecessária a vacinação contra o HPV"], resposta_correta_texto: "Previne a transmissão e infecção por Infecções Sexualmente Transmissíveis (ISTs), como HIV, sífilis e hepatites" },
-      { nivel: 1, tema: "Saúde do Homem", pergunta: "A vacina contra o HPV é disponibilizada pelo SUS para meninos e jovens a fim de prevenir:", opcoes: ["Exclusivamente gripes sazonais", "Verrugas genitais e cânceres relacionados ao papilomavírus (como pênis, ânus e orofaringe)", "Apendicite aguda", "Queda precoce de cabelo"], resposta_correta_texto: "Verrugas genitais e cânceres relacionados ao papilomavírus (como pênis, ânus e orofaringe)" },
-
-      // 3. SAÚDE DO HOMEM - NÍVEL 2
-      { nivel: 2, tema: "Saúde do Homem", pergunta: "A Política Nacional de Atenção Integral à Saúde do Homem (PNAISH) tem entre seus objetivos centrais:", opcoes: ["Focar o atendimento exclusivamente na realização de exames cirúrgicos prostáticos", "Promover ações que facilitem o acesso dos homens aos serviços de saúde, integrando a saúde sexual, reprodutiva e prevenção de violências", "Retirar o homem do papel de cuidador na família", "Estimular o uso indiscriminado de testosterona sintética"], resposta_correta_texto: "Promover ações que facilitem o acesso dos homens aos serviços de saúde, integrando a saúde sexual, reprodutiva e prevenção de violências" },
-      { nivel: 2, tema: "Saúde do Homem", pergunta: "A estratégia de \"Pré-Natal do Pai/Parceiro\" na Atenção Primária busca:", opcoes: ["Cobrar taxas adicionais de atendimento familiar", "Envolver o homem no processo de gestação, parto e puerpério, aproveitando o momento para atualizar exames de rotina, testes rápidos e vacinas", "Isolar o parceiro das salas de consulta da gestante", "Realizar cirurgias urológicas obrigatórias no primeiro trimestre da gestação da companheira"], resposta_correta_texto: "Envolver o homem no processo de gestação, parto e puerpério, aproveitando o momento para atualizar exames de rotina, testes rápidos e vacinas" },
-      { nivel: 2, tema: "Saúde do Homem", pergunta: "O tabagismo e o consumo excessivo de álcool na população masculina estão diretamente associados ao aumento significativo de:", opcoes: ["Doenças cardiovasculares, cirrose hepática e diversos tipos de neoplasias", "Hipertrofia muscular espontânea", "Redução natural dos níveis de estresse celular", "Imunidade protetora contra infecções pulmonares"], resposta_correta_texto: "Doenças cardiovasculares, cirrose hepática e diversos tipos de neoplasias" },
-      { nivel: 2, tema: "Saúde do Homem", pergunta: "A queixa frequente de jato urinário fraco, esforço miccional e noctúria em homens acima de 50 anos atendidos na UBS sugere inicialmente a hipótese de:", opcoes: ["Hiperplasia Prostática Benigna (HPB)", "Cefaleia tensional crônica", "Insuficiência hepática aguda fulminante", "Hérnia de disco lombar sem compressão"], resposta_correta_texto: "Hiperplasia Prostática Benigna (HPB)" },
-      { nivel: 2, tema: "Saúde do Homem", pergunta: "Na saúde do trabalhador masculino, as causas externas (como acidentes de trabalho, trânsito e violência interpessoal) representam:", opcoes: ["Uma parcela insignificante das mortes prematuras", "Uma das principais causas de mortalidade e morbidade na faixa etária jovem e adulta", "Fatores que não demandam intervenção ou vigilância da Atenção Primária", "Problemas restritos exclusivamente aos hospitais privados"], resposta_correta_texto: "Uma das principais causas de mortalidade e morbidade na faixa etária jovem e adulta" },
-
-      // 3. SAÚDE DO HOMEM - NÍVEL 3
-      { nivel: 3, tema: "Saúde do Homem", pergunta: "Sobre o rastreamento populacional do câncer de próstata por meio do antígeno prostático específico (PSA) e toque retal em homens assintomáticos, o Ministério da Saúde e o INCA recomendam:", opcoes: ["Realização obrigatória anual para todos os homens a partir dos 35 anos", "Não realização de rastreamento populacional em massa, incentivando a decisão compartilhada após esclarecimento de riscos e benefícios (sobrediagnóstico e sobretratamento)", "Realização de biópsia prostática antes de qualquer exame de sangue", "Suspensão permanente de atendimentos urológicos na atenção primária"], resposta_correta_texto: "Não realização de rastreamento populacional em massa, incentivando a decisão compartilhada após esclarecimento de riscos e benefícios (sobrediagnóstico e sobretratamento)" },
-      { nivel: 3, tema: "Saúde do Homem", pergunta: "A disfunção erétil de origem vascular na Atenção Primária é frequentemente considerada um marcador sentinela para:", opcoes: ["Doença arterial coronariana e eventos cardiovasculares ateroscleróticos futuros", "Hipotireoidismo subclínico isolado", "Rinite alérgica crônica sazonal", "Aumento transitório da taxa de filtração glomerular"], resposta_correta_texto: "Doença arterial coronariana e eventos cardiovasculares ateroscleróticos futuros" },
-      { nivel: 3, tema: "Saúde do Homem", pergunta: "No manejo da uretrite masculina com corrimento uretral na APS, a abordagem sindrômica padronizada pelo Ministério da Saúde preconiza o tratamento empírico simultâneo cobrindo:", opcoes: ["Neisseria gonorrhoeae e Chlamydia trachomatis", "Escherichia coli e Staphylococcus aureus", "Streptococcus pneumoniae e Klebsiella", "Vírus Herpes Simples e Citomegalovírus"], resposta_correta_texto: "Neisseria gonorrhoeae e Chlamydia trachomatis" },
-      { nivel: 3, tema: "Saúde do Homem", pergunta: "A Síndrome de Deficiência Androgênica do Envelhecimento Masculino (DAEM) requer para o seu diagnóstico correto:", opcoes: ["Apenas a constatação de idade superior a 60 anos, sem exames laboratoriais", "Presença de sintomas clínicos compatíveis (queda de libido, fadiga, osteopenia) associada a níveis laboratoriais comprovadamente baixos de testosterona", "Uso obrigatório de testes ergométricos alterados", "Presença isolada de queixa de perda capilar"], resposta_correta_texto: "Presença de sintomas clínicos compatíveis (queda de libido, fadiga, osteopenia) associada a níveis laboratoriais comprovadamente baixos de testosterona" },
-      { nivel: 3, tema: "Saúde do Homem", pergunta: "O câncer de pênis, uma neoplasia com alta incidência em regiões com maior vulnerabilidade social no Brasil, tem como principais fatores de risco associados:", opcoes: ["Má higiene íntima crônica, fimose não tratada e infecção persistente por subtipos oncogênicos do HPV", "Prática frequente de corrida de rua e musculação", "Excesso de ingestão de água mineral tratada", "Uso regular de preservativos de látex"], resposta_correta_texto: "Má higiene íntima crônica, fimose não tratada e infecção persistente por subtipos oncogênicos do HPV" },
-
-      // 4. IMUNIZAÇÃO E VACINAS - NÍVEL 1
-      { nivel: 1, tema: "Imunização e Vacinas", pergunta: "Qual é o principal objetivo do Programa Nacional de Imunizações (PNI) do SUS?", opcoes: ["Controlar, erradicar e eliminar doenças imunopreveníveis na população brasileira", "Comercializar medicamentos em farmácias privadas", "Substituir o tratamento de água encanada", "Promover apenas vacinas voltadas ao público idoso"], resposta_correta_texto: "Controlar, erradicar e eliminar doenças imunopreveníveis na população brasileira" },
-      { nivel: 1, tema: "Imunização e Vacinas", pergunta: "A caderneta de vacinação é um documento fundamental porque:", opcoes: ["Registra todo o histórico vacinal e permite verificar doses pendentes ou atrasadas", "Serve exclusivamente como documento de identificação financeira", "Tem validade apenas durante o primeiro ano de vida", "Substitui a certidão de nascimento oficial"], resposta_correta_texto: "Registra todo o histórico vacinal e permite verificar doses pendentes ou atrasadas" },
-      { nivel: 1, tema: "Imunização e Vacinas", pergunta: "Qual vacina aplicada no início da vida tem como marca característica a formação de uma pequena cicatriz no braço direito?", opcoes: ["Vacina BCG", "Vacina contra influenza (gripe)", "Vacina pneumocócica 10-valente", "Vacina inativada poliomielite (VIP)"], resposta_correta_texto: "Vacina BCG" },
-      { nivel: 1, tema: "Imunização e Vacinas", pergunta: "A imunidade de rebanho (ou coletiva) ocorre quando:", opcoes: ["Toda a população adoece ao mesmo tempo", "Uma alta porcentagem da comunidade é vacinada, dificultando a circulação do vírus e protegendo os não vacinados", "Apenas os profissionais de saúde recebem as vacinas", "As vacinas deixam de ter eficácia biológica"], resposta_correta_texto: "Uma alta porcentagem da comunidade é vacinada, dificultando a circulação do vírus e protegendo os não vacinados" },
-      { nivel: 1, tema: "Imunização e Vacinas", pergunta: "A vacina contra o tétano e a difteria (dT - dupla adulto) deve ser reforçada na rotina de adultos e idosos a cada:", opcoes: ["1 ano", "10 anos", "30 anos", "6 meses"], resposta_correta_texto: "10 anos" },
-
-      // 4. IMUNIZAÇÃO E VACINAS - NÍVEL 2
-      { nivel: 2, tema: "Imunização e Vacinas", pergunta: "A vacina Tríplice Viral protege o indivíduo contra quais enfermidades?", opcoes: ["Sarampo, Caxumba e Rubéola", "Tétano, Difteria e Coqueluche", "Hepatite A, Febre Amarela e Dengue", "Meningite C, Pneumonia e Varicela"], resposta_correta_texto: "Sarampo, Caxumba e Rubéola" },
-      { nivel: 2, tema: "Imunização e Vacinas", pergunta: "Qual é a faixa ideal de temperatura padronizada pelo PNI para o armazenamento e conservação da maioria dos imunobiológicos na câmara de conservação da UBS?", opcoes: ["Entre -20°C e -10°C", "Entre +2°C e +8°C", "Entre +15°C e +25°C", "Acima de +30°C"], resposta_correta_texto: "Entre +2°C e +8°C" },
-      { nivel: 2, tema: "Imunização e Vacinas", pergunta: "A vacina Pentavalente, administrada aos 2, 4 e 6 meses de vida, confere proteção contra:", opcoes: ["Difteria, Tétano, Coqueluche, Hepatite B e Haemophilus influenzae tipo b", "Sarampo, Rubéola, Caxumba, Varicela e Febre Tifoide", "Poliomielite, Rotavírus, HPV, Raiva e Dengue", "Febre Amarela, Meningocócica ACWY, Cólera, Herpes e Tuberculose"], resposta_correta_texto: "Difteria, Tétano, Coqueluche, Hepatite B e Haemophilus influenzae tipo b" },
-      { nivel: 2, tema: "Imunização e Vacinas", pergunta: "Na ocorrência de Eventos Adversos Pós-Vacinação (EAPV), qual é a conduta primária da equipe de saúde da Atenção Básica?", opcoes: ["Ocultar a reação para não alarmar a comunidade", "Acolher o paciente, prestar assistência clínica e notificar obrigatoriamente o caso no sistema de vigilância (e-SUS Notifica / EAPV)", "Suspender permanentemente a vacinação em toda a Unidade Básica", "Proibir o paciente de tomar qualquer outra vacina no futuro"], resposta_correta_texto: "Acolher o paciente, prestar assistência clínica e notificar obrigatoriamente o caso no sistema de vigilância (e-SUS Notifica / EAPV)" },
-      { nivel: 2, tema: "Imunização e Vacinas", pergunta: "A vacina contra a Febre Amarela é composta por:", opcoes: ["Toxoides inativados de origem bacteriana", "Vírus vivos atenuados", "Fragmentos sintéticos de DNA recombinante sem veículo", "Anticorpos prontos extraídos de plasma de equinos"], resposta_correta_texto: "Vírus vivos atenuados" },
-
-      // 4. IMUNIZAÇÃO E VACINAS - NÍVEL 3
-      { nivel: 3, tema: "Imunização e Vacinas", pergunta: "Qual das seguintes situações representa uma contraindicação geral e temporária para a aplicação de vacinas de vírus vivo atenuado?", opcoes: ["Uso de imunossupressores em doses imunossupressoras ou vigência de quimioterapia oncológica ativa", "Rinite alérgica leve ou resfriado sem febre", "Aleitamento materno exclusivo pelo bebê", "História prévia de alergia leve a picadas de insetos"], resposta_correta_texto: "Uso de imunossupressores em doses imunossupressoras ou vigência de quimioterapia oncológica ativa" },
-      { nivel: 3, tema: "Imunização e Vacinas", pergunta: "Em caso de exposição acidental grave ao vírus da raiva humana (como mordedura profunda por animal doméstico suspeito que fugiu ou animal silvestre), a conduta profilática na APS/urgência consiste em:", opcoes: ["Lavagem abundante do ferimento com água e sabão e administração de soro/imunoglobulina antirrábica + esquema vacinal", "Apenas aplicação de compressa quente sem lavagem", "Prescrição de penicilina oral sem imunização", "Fechamento e sutura hermética imediata de todas as bordas do ferimento"], resposta_correta_texto: "Lavagem abundante do ferimento com água e sabão e administração de soro/imunoglobulina antirrábica + esquema vacinal" },
-      { nivel: 3, tema: "Imunização e Vacinas", pergunta: "Se uma pessoa necessita receber no mesmo dia duas vacinas de vírus vivos atenuados injetáveis (ex: Tríplice Viral e Febre Amarela) e elas não forem aplicadas simultaneamente, qual intervalo mínimo deve ser respeitado entre as doses?", opcoes: ["7 dias", "15 dias", "30 dias (ou 4 semanas)", "6 meses"], resposta_correta_texto: "30 dias (ou 4 semanas)" },
-      { nivel: 3, tema: "Imunização e Vacinas", pergunta: "A ocorrência de \"falso positivo\" ou teste com leitura duvidosa no teste tuberculínico (PPD/IGRA) pode sofrer interferência temporal da administração recente da vacina:", opcoes: ["Tríplice viral (sarampo, caxumba e rubéola)", "dTpa acelular", "Hepatite B recombinante", "Vacina meningocócica conjugada C"], resposta_correta_texto: "Tríplice viral (sarampo, caxumba e rubéola)" },
-      { nivel: 3, tema: "Imunização e Vacinas", pergunta: "No esquema do PNI para crianças, a transição da vacina oral da poliomielite (VOP - vírus atenuado) para a vacina inativada (VIP - injetável) teve como principal fundamentação técnica e epidemiológica:", opcoes: ["Reduzir o custo operacional do frasco", "Eliminar o risco de casos de paralisia flácida associada ao vírus vacinal (Poliomielite Paralítica Associada à Vacina - VAPP) e apoiar a erradicação global", "Aumentar a facilidade de recusa dos pais", "Facilitar o transporte sem necessidade de refrigeração"], resposta_correta_texto: "Eliminar o risco de casos de paralisia flácida associada ao vírus vacinal (Poliomielite Paralítica Associada à Vacina - VAPP) e apoiar a erradicação global" },
-
-      // 5. SAÚDE MENTAL - NÍVEL 1
-      { nivel: 1, tema: "Saúde Mental", pergunta: "O acolhimento em saúde mental na Atenção Primária à Saúde tem como foco:", opcoes: ["Escutar ativamente o usuário, identificar o sofrimento psíquico e construir propostas de cuidado conjunto", "Ignorar as queixas emocionais e focar apenas em dores físicas", "Internar imediatamente todos os pacientes em hospitais fechados", "Isolar o indivíduo de sua família e da vida em comunidade"], resposta_correta_texto: "Escutar ativamente o usuário, identificar o sofrimento psíquico e construir propostas de cuidado conjunto" },
-      { nivel: 1, tema: "Saúde Mental", pergunta: "O estresse contínuo e excessivo no ambiente de trabalho que leva ao esgotamento físico e emocional completo é conhecido como:", opcoes: ["Síndrome de Burnout", "Síndrome do Túnel do Carpo", "Trombose venosa profunda", "Enxaqueca clássica"], resposta_correta_texto: "Síndrome de Burnout" },
-      { nivel: 1, tema: "Saúde Mental", pergunta: "Qual é um dos sintomas mais frequentes nos transtornos de ansiedade atendidos na UBS?", opcoes: ["Preocupação excessiva, agitação, tensão muscular e sensação constante de perigo iminente", "Hipotermia permanente e queda do reflexo pupilar", "Aumento súbito da força física esquelética", "Perda total do tecido adiposo em 24 horas"], resposta_correta_texto: "Preocupação excessiva, agitação, tensão muscular e sensação constante de perigo iminente" },
-      { nivel: 1, tema: "Saúde Mental", pergunta: "A prática de atividades físicas, o lazer e a manutenção de boas redes de apoio social são considerados:", opcoes: ["Fatores de proteção para a saúde mental", "Gatilhos obrigatórios para quadros depressivos", "Práticas proibidas no modelo de atenção psicossocial", "Sinônimos de distúrbio cognitivo grave"], resposta_correta_texto: "Fatores de proteção para a saúde mental" },
-      { nivel: 1, tema: "Saúde Mental", pergunta: "Qual serviço da Rede de Atenção Psicossocial (RAPS) funciona como referência especializada territorial para casos graves e persistentes de sofrimento mental?", opcoes: ["Centro de Atenção Psicossocial (CAPS)", "Instituto Médico Legal (IML)", "Farmácia Popular exclusiva", "Agência Nacional de Vigilância Sanitária (ANVISA)"], resposta_correta_texto: "Centro de Atenção Psicossocial (CAPS)" },
-
-      // 5. SAÚDE MENTAL - NÍVEL 2
-      { nivel: 2, tema: "Saúde Mental", pergunta: "O que caracteriza o \"Apoio Matricial\" (Matriciamento) em saúde mental na Atenção Básica?", opcoes: ["Processo de suporte técnico-pedagógico compartilhado entre equipes de saúde mental (como CAPS/eMulti) e equipes de Saúde da Família", "Transferência compulsória de todos os pacientes psiquiátricos para asilos", "Substituição do médico da UBS por um juiz de direito", "Fechamento de unidades básicas para abertura de manicômios"], resposta_correta_texto: "Processo de suporte técnico-pedagógico compartilhado entre equipes de saúde mental (como CAPS/eMulti) e equipes de Saúde da Família" },
-      { nivel: 2, tema: "Saúde Mental", pergunta: "Os Transtornos Mentais Comuns (TMC) mais prevalentes na população atendida pela Atenção Primária englobam principalmente:", opcoes: ["Sintomas depressivos, ansiosos e queixas somatoformes inespecíficas", "Catatonia periódica grave", "Esquizofrenia hebefrênica refratária em todos os casos", "Demência vascular em estágio terminal em jovens"], resposta_correta_texto: "Sintomas depressivos, ansiosos e queixas somatoformes inespecíficas" },
-      { nivel: 2, tema: "Saúde Mental", pergunta: "A política de Redução de Danos no cuidado aos usuários de álcool e outras drogas na Atenção Primária propõe:", opcoes: ["Exigir abstinência imediata e total como condição única para qualquer tipo de atendimento", "Minimizar os prejuízos biológicos, sociais e econômicos do uso de substâncias, respeitando a autonomia e o tempo do usuário", "Criminalizar e punir os usuários dentro da Unidade Básica de Saúde", "Suspender o acesso aos serviços de vacinação e consultas clínicas"], resposta_correta_texto: "Minimizar os prejuízos biológicos, sociais e econômicos do uso de substâncias, respeitando a autonomia e o tempo do usuário" },
-      { nivel: 2, tema: "Saúde Mental", pergunta: "O uso indiscriminado e prolongado de benzodiazepínicos (ansiolíticos como diazepam e clonazepam) na APS está associado a:", opcoes: ["Risco elevado de dependência física, tolerância, sonolência diurna e aumento do risco de quedas em idosos", "Melhora permanente da cognição e memória de curto prazo", "Eliminação definitiva de qualquer causa orgânica de ansiedade", "Cura biológica instantânea do transtorno do pânico"], resposta_correta_texto: "Risco elevado de dependência física, tolerância, sonolência diurna e aumento do risco de quedas em idosos" },
-      { nivel: 2, tema: "Saúde Mental", pergunta: "A formulação de um Projeto Terapêutico Singular (PTS) para um usuário em sofrimento mental envolve:", opcoes: ["Um conjunto de propostas terapêuticas articuladas construídas com o próprio usuário, sua família e a equipe multiprofissional", "A imposição vertical de regras hospitalares sem participação da pessoa atendida", "A prescrição de uma única receita médica válida por 10 anos", "A proibição de qualquer atividade comunitária fora de casa"], resposta_correta_texto: "Um conjunto de propostas terapêuticas articuladas construídas com o próprio usuário, sua família e a equipe multiprofissional" },
-
-      // 5. SAÚDE MENTAL - NÍVEL 3
-      { nivel: 3, tema: "Saúde Mental", pergunta: "Na avaliação do risco de suicídio na Atenção Primária, qual das condutas abaixo é a mais adequada e segura?", opcoes: ["Evitar perguntar diretamente sobre pensamentos de morte por medo de induzir o comportamento", "Perguntar de forma clara e empática sobre a presença de ideação, planejamento e acesso a meios letais, estratificando o risco para definir o plano de segurança", "Descartar a queixa caso o paciente tenha expressado a intenção de forma verbal", "Encaminhar o paciente desacompanhado para casa solicitando retorno em 6 meses"], resposta_correta_texto: "Perguntar de forma clara e empática sobre a presença de ideação, planejamento e acesso a meios letais, estratificando o risco para definir o plano de segurança" },
-      { nivel: 3, tema: "Saúde Mental", pergunta: "A técnica psicoterapêutica breve estruturada chamada \"Ativação Comportamental\", útil no manejo de depressão na APS, baseia-se em:", opcoes: ["Incentivar o paciente a aumentar a frequência de comportamentos que geram contato com reforçadores positivos e quebram a inércia/isolamento", "Submeter o paciente a sessões diárias de privação de sono", "Aplicar técnicas aversivas punitivas para sintomas depressivos", "Eliminar completamente as tarefas do dia a dia por tempo indeterminado"], resposta_correta_texto: "Incentivar o paciente a aumentar a frequência de comportamentos que geram contato com reforçadores positivos e quebram a inércia/isolamento" },
-      { nivel: 3, tema: "Saúde Mental", pergunta: "No acompanhamento de usuários em uso de inibidores seletivos da recaptação de serotonina (ISRS, como fluoxetina e sertralina), a equipe da APS deve orientar o paciente de que:", opcoes: ["O efeito terapêutico pleno sobre os sintomas depressivos e ansiosos costuma demorar entre 2 a 4 semanas, e efeitos adversos gastrointestinais podem ocorrer no início", "A melhora é instantânea nos primeiros 10 minutos após o primeiro comprimido", "A medicação nunca causa efeitos gastrointestinais ou náuseas", "O tratamento deve ser interrompido abruptamente assim que houver a primeira melhora"], resposta_correta_texto: "O efeito terapêutico pleno sobre os sintomas depressivos e ansiosos costuma demorar entre 2 a 4 semanas, e efeitos adversos gastrointestinais podem ocorrer no início" },
-      { nivel: 3, tema: "Saúde Mental", pergunta: "O questionário AUDIT (Alcohol Use Disorders Identification Test), frequentemente aplicado na Atenção Primária, tem como finalidade:", opcoes: ["Rastrear o padrão de uso de álcool e identificar precocemente o consumo de risco, nocivo ou provável dependência", "Diagnosticar tumores pancreáticos precoces", "Prescrever medicações injetáveis automaticamente", "Avaliar o grau de estresse exclusivamente em motoristas de transporte público"], resposta_correta_texto: "Rastrear o padrão de uso de álcool e identificar precocemente o consumo de risco, nocivo ou provável dependência" },
-      { nivel: 3, tema: "Saúde Mental", pergunta: "A Lei da Reforma Psiquiátrica no Brasil (Lei nº 10.216/2001) estabelece como diretriz fundamental:", opcoes: ["A reinstitucionalização em massa de pacientes com transtornos mentais em asilos fechados", "A proteção dos direitos das pessoas portadoras de transtornos mentais e o redirecionamento do modelo assistencial para serviços comunitários e abertos na RAPS", "A proibição do atendimento de saúde mental nas Unidades Básicas de Saúde", "A obrigatoriedade do confinamento involuntário para qualquer queixa psiquiátrica leve"], resposta_correta_texto: "A proteção dos direitos das pessoas portadoras de transtornos mentais e o redirecionamento do modelo assistencial para serviços comunitários e abertos na RAPS" },
-
-      // 6. HIPERTENSÃO E DIABETES - NÍVEL 1
-      { nivel: 1, tema: "Hipertensão e Diabetes", pergunta: "Qual valor de Pressão Arterial (PA) em repouso no consultório é classicamente considerado o limite superior da normalidade para adultos?", opcoes: ["Menor que 120/80 mmHg", "Acima de 200/120 mmHg", "Igual a 180/100 mmHg", "Menor que 50/30 mmHg"], resposta_correta_texto: "Menor que 120/80 mmHg" },
-      { nivel: 1, tema: "Hipertensão e Diabetes", pergunta: "A Diabetes Mellitus é uma doença crônica caracterizada principalmente por:", opcoes: ["Queda excessiva da temperatura corporal", "Elevação sustentada dos níveis de glicose (açúcar) no sangue", "Destruição imediata das plaquetas sanguíneas", "Diminuição da capacidade visual apenas no período noturno"], resposta_correta_texto: "Elevação sustentada dos níveis de glicose (açúcar) no sangue" },
-      { nivel: 1, tema: "Hipertensão e Diabetes", pergunta: "Qual destes fatores de estilo de vida contribui fortemente para a prevenção e controle da hipertensão arterial?", opcoes: ["Redução do consumo de sódio/sal e perda de excesso de peso", "Aumento da ingestão de alimentos ultraprocessados", "Manutenção de uma vida 100% sedentária", "Consumo diário e elevado de bebidas alcoólicas"], resposta_correta_texto: "Redução do consumo de sódio/sal e perda de excesso de peso" },
-      { nivel: 1, tema: "Hipertensão e Diabetes", pergunta: "Os sintomas clássicos de abertura do Diabetes Mellitus descompensado (conhecidos como os \"4 Ps\") incluem:", opcoes: ["Poliúria (urinar muito), Polidipsia (muita sede), Polifagia (muita fome) e Perda de peso", "Palpitação, Pneumonia, Parestesia e Prurido", "Paralisia, Palidez, Pleurite e Prostração súbita", "Pigmentação, Pirose, Púrpura e Polipose"], resposta_correta_texto: "Poliúria (urinar muito), Polidipsia (muita sede), Polifagia (muita fome) e Perda de peso" },
-      { nivel: 1, tema: "Hipertensão e Diabetes", pergunta: "Por que a Hipertensão Arterial é frequentemente chamada de \"doença silenciosa\"?", opcoes: ["Porque nunca altera o organismo humano", "Porque na maioria das vezes evolui sem apresentar sintomas evidentes nos estágios iniciais", "Porque afeta apenas a fala do paciente", "Porque só causa alterações se o indivíduo estiver dormindo"], resposta_correta_texto: "Porque na maioria das vezes evolui sem apresentar sintomas evidentes nos estágios iniciais" },
-
-      // 6. HIPERTENSÃO E DIABETES - NÍVEL 2
-      { nivel: 2, tema: "Hipertensão e Diabetes", pergunta: "O exame de Hemoglobina Glicada (HbA1c) é essencial no monitoramento do Diabetes na APS porque:", opcoes: ["Mostra a concentração de glicose exclusivamente no minuto da coleta", "Reflete a média do controle glicêmico do paciente nos últimos 2 a 3 meses", "Mede a quantidade de gordura acumulada no fígado", "Substitui a medição da pressão arterial nas consultas"], resposta_correta_texto: "Reflete a média do controle glicêmico do paciente nos últimos 2 a 3 meses" },
-      { nivel: 2, tema: "Hipertensão e Diabetes", pergunta: "Para a confirmação diagnóstica de Diabetes Mellitus por meio da glicemia de jejum em indivíduos assintomáticos, o ponto de corte padronizado (confirmado em segunda amostra) é:", opcoes: ["Glicemia de jejum maior ou igual a 126 mg/dL", "Glicemia de jejum maior ou igual a 80 mg/dL", "Glicemia de jejum menor que 60 mg/dL", "Glicemia de jejum entre 70 e 99 mg/dL"], resposta_correta_texto: "Glicemia de jejum maior ou igual a 126 mg/dL" },
-      { nivel: 2, tema: "Hipertensão e Diabetes", pergunta: "Um paciente diabético que apresenta tremores, sudorese fria, palidez, confusão mental e taquicardia provavelmente está passando por um episódio de:", opcoes: ["Hipoglicemia (baixa glicose no sangue)", "Crise hipertensiva com hemorragia digestiva", "Febre reumática aguda", "Edema agudo de pulmão inflamatório"], resposta_correta_texto: "Hipoglicemia (baixa glicose no sangue)" },
-      { nivel: 2, tema: "Hipertensão e Diabetes", pergunta: "Na técnica adequada de aferição da pressão arterial no consultório da UBS, recomenda-se:", opcoes: ["Manter o paciente descansando sentado por pelo menos 3 a 5 minutos, com bexiga vazia e sem ter fumado ou tomado café nos últimos 30 minutos", "Aferir a pressão enquanto o paciente realiza uma caminhada rápida", "Usar manguito de tamanho infantil em todos os adultos obesos", "Medir a pressão enquanto o paciente fala em voz alta sem apoio para o braço"], resposta_correta_texto: "Manter o paciente descansando sentado por pelo menos 3 a 5 minutos, com bexiga vazia e sem ter fumado ou tomado café nos últimos 30 minutos" },
-      { nivel: 2, tema: "Hipertensão e Diabetes", pergunta: "Qual é uma das principais complicações crônicas microvasculares do Diabetes Mellitus não controlado acompanhada na APS?", opcoes: ["Retinopatia diabética e Nefropatia diabética", "Fratura óssea traumática espontânea", "Apendicite supurada", "Rinite atrófica"], resposta_correta_texto: "Retinopatia diabética e Nefropatia diabética" },
-
-      // 6. HIPERTENSÃO E DIABETES - NÍVEL 3
-      { nivel: 3, tema: "Hipertensão e Diabetes", pergunta: "No exame periódico dos pés do paciente diabético na UBS (\"Exame do Pé Diabético\"), a perda da sensibilidade tátil e protetora plantar é avaliada como padrão-ouro através do teste com:", opcoes: ["Monofilamento de nylon de Semmes-Weinstein (10g)", "Fita métrica de borracha", "Termômetro infravermelho de fronte", "Otoscópio convencional"], resposta_correta_texto: "Monofilamento de nylon de Semmes-Weinstein (10g)" },
-      { nivel: 3, tema: "Hipertensão e Diabetes", pergunta: "O que diferencia a \"Urgência Hipertensiva\" da \"Emergência Hipertensiva\" na abordagem clínica da APS?", opcoes: ["A emergência hipertensiva envolve elevação acentuada da PA com presença de Lesão Aguda em Órgãos-Alvo (LOA - ex: IAM, AVC, edema agudo de pulmão), exigindo redução imediata e internação hospitalar", "A urgência hipertensiva exige redução imediata da pressão para zero em 15 minutos", "Não há diferença técnica entre os dois termos", "A emergência hipertensiva ocorre apenas em gestantes no primeiro mês"], resposta_correta_texto: "A emergência hipertensiva envolve elevação acentuada da PA com presença de Lesão Aguda em Órgãos-Alvo (LOA - ex: IAM, AVC, edema agudo de pulmão), exigindo redução imediata e internação hospitalar" },
-      { nivel: 3, tema: "Hipertensão e Diabetes", pergunta: "O fenômeno conhecido como \"Hipertensão Mascarada\" ocorre quando o paciente apresenta:", opcoes: ["Valores de pressão arterial normais nas medições de consultório na UBS, mas níveis persistentemente elevados nas medições fora dele (MAPA ou MRPA)", "Valores de pressão arterial elevados apenas no consultório e normais em casa", "Oscilação de pressão causada pelo uso de máscara facial cirúrgica", "Hipotensão contínua em repouso e no esforço"], resposta_correta_texto: "Valores de pressão arterial normais nas medições de consultório na UBS, mas níveis persistentemente elevados nas medições fora dele (MAPA ou MRPA)" },
-      { nivel: 3, tema: "Hipertensão e Diabetes", pergunta: "No rastreamento de lesão renal incipiente (nefropatia diabética) na Atenção Primária em pacientes com Diabetes Tipo 2, o exame laboratorial de escolha para identificar dano glomerular precoce é:", opcoes: ["Relação Albumina/Creatinina em amostra isolada de urina (RAC)", "Urocultura quantitativa simples", "Tomografia contrastada de pelve", "Exame simples de densidade urinária"], resposta_correta_texto: "Relação Albumina/Creatinina em amostra isolada de urina (RAC)" },
-      { nivel: 3, tema: "Hipertensão e Diabetes", pergunta: "Entre as classes de anti-hipertensivos disponibilizados na Relação Nacional de Medicamentos Essenciais (RENAME) na APS, os Inibidores da ECA (como Enalapril) e os BRA (como Losartana) têm benefício comprovado adicional de:", opcoes: ["Nefroproteção em pacientes com doença renal crônica e albuminúria/proteinúria", "Aumento imediato da absorção intestinal de glicose", "Elevação sustentada dos batimentos cardíacos acima de 150 bpm", "Substituição da necessidade de insulina no diabetes descompensado"], resposta_correta_texto: "Nefroproteção em pacientes com doença renal crônica e albuminúria/proteinúria" }
+      // CATEGORIA 6 – Mitos, verdades e saúde mental
+      {
+        nivel: 1,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "A depressão é simplesmente falta de força de vontade?",
+        opcoes: [
+          "Sim, basta a pessoa querer melhorar.",
+          "Sim, principalmente entre adolescentes.",
+          "Não, a depressão é uma condição de saúde que envolve fatores biológicos, psicológicos e sociais.",
+          "Não, porque a depressão não existe na adolescência."
+        ],
+        resposta_correta_texto: "Não, a depressão é uma condição de saúde que envolve fatores biológicos, psicológicos e sociais."
+      },
+      {
+        nivel: 1,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "Adolescentes também podem desenvolver transtornos mentais?",
+        opcoes: [
+          "Sim, dificuldades e transtornos de saúde mental também podem surgir durante a adolescência.",
+          "Não, esses problemas aparecem somente depois dos 30 anos.",
+          "Não, porque o cérebro ainda está em desenvolvimento.",
+          "Sim, mas somente quando existe histórico familiar."
+        ],
+        resposta_correta_texto: "Sim, dificuldades e transtornos de saúde mental também podem surgir durante a adolescência."
+      },
+      {
+        nivel: 2,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "Procurar um psicólogo significa que uma pessoa é fraca ou incapaz de resolver seus problemas?",
+        opcoes: [
+          "Sim, porque demonstra dependência.",
+          "Não, buscar ajuda profissional é uma atitude de cuidado e responsabilidade com a própria saúde.",
+          "Sim, porque somente pessoas com transtornos graves precisam de psicólogo.",
+          "Não, mas apenas adultos devem procurar esse tipo de atendimento."
+        ],
+        resposta_correta_texto: "Não, buscar ajuda profissional é uma atitude de cuidado e responsabilidade com a própria saúde."
+      },
+      {
+        nivel: 2,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "Qual das alternativas apresenta um possível sinal de depressão?",
+        opcoes: [
+          "Sentir fome antes do almoço.",
+          "Ter vontade de assistir a um filme.",
+          "Ficar animado com uma conquista.",
+          "Apresentar tristeza persistente, perda de interesse e alterações no sono ou apetite."
+        ],
+        resposta_correta_texto: "Apresentar tristeza persistente, perda de interesse e alterações no sono ou apetite."
+      },
+      {
+        nivel: 3,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "O que devemos fazer quando alguém demonstra pensamentos de suicídio?",
+        opcoes: [
+          "Levar a situação a sério, acolher a pessoa e buscar ajuda imediatamente.",
+          "Dizer que ela está exagerando.",
+          "Prometer que não contaremos para ninguém, independentemente do risco.",
+          "Esperar alguns dias para observar se melhora."
+        ],
+        resposta_correta_texto: "Levar a situação a sério, acolher a pessoa e buscar ajuda imediatamente."
+      },
+      {
+        nivel: 3,
+        tema: "Mitos, Verdades e Saúde Mental",
+        pergunta: "Qual afirmação sobre saúde mental é verdadeira?",
+        opcoes: [
+          "Só precisamos cuidar da saúde mental quando estamos doentes.",
+          "Pessoas felizes nunca enfrentam problemas emocionais.",
+          "A saúde mental merece atenção e cuidado em todas as fases da vida.",
+          "Problemas emocionais são sempre resolvidos apenas com força de vontade."
+        ],
+        resposta_correta_texto: "A saúde mental merece atenção e cuidado em todas as fases da vida."
+      }
     ];
 
     const motivationalQuotes = [
-      "Excelente resposta! O conhecimento em saúde transforma vidas e fortalece o cuidado.",
-      "Parabéns! Você demonstrou grande domínio sobre a Atenção Primária à Saúde!",
-      "Mandou muito bem! A prevenção e a promoção da saúde são os melhores caminhos.",
-      "Perfeito! Cada acerto reflete o compromisso com o bem-estar e a qualidade de vida.",
-      "Sensacional! Você está preparado para fazer a diferença na saúde coletiva!",
-      "Brilhante! O cuidado integral e contínuo é a base de um sistema de saúde forte."
+      "Excelente resposta! Falar e compreender as emoções fortalece nossa saúde mental.",
+      "Parabéns! Você demonstrou empatia, consciência e inteligência emocional!",
+      "Mandou muito bem! O autocuidado e o diálogo aberto são os melhores caminhos.",
+      "Perfeito! Cada reflexão nos ajuda a construir relações mais saudáveis e acolhedoras.",
+      "Sensacional! Cuidar de si mesmo e apoiar quem precisa faz toda a diferença!",
+      "Brilhante! A saúde mental merece atenção, carinho e respeito todos os dias."
     ];
 
     // ==========================================
-    // 2. RENDERIZAÇÃO DA ROLETA
+    // 2. CONFIGURAÇÃO DA ROLETA
     // ==========================================
     const sectors = [
-      { label: "Autocuidado", color: "#e74c3c" },
-      { label: "Saúde da Mulher", color: "#f39c12" },
-      { label: "Saúde do Homem", color: "#8e44ad" },
-      { label: "Imunização e Vacinas", color: "#27ae60" },
-      { label: "Saúde Mental", color: "#2980b9" },
-      { label: "Hipertensão e Diabetes", color: "#16a085" }
+      { label: "Emoções e Sentimentos", color: "#e74c3c" },
+      { label: "Amizades e Relacionamentos", color: "#f39c12" },
+      { label: "Redes Sociais e Autoestima", color: "#8e44ad" },
+      { label: "Ansiedade e Estresse", color: "#27ae60" },
+      { label: "Autocuidado e Hábitos Saudáveis", color: "#2980b9" },
+      { label: "Mitos, Verdades e Saúde Mental", color: "#16a085" }
     ];
 
-    let currentScore = 0;
-    let questionsAnswered = 0;
+    let totalHits = 0;
+    let totalMisses = 0;
+    let consecutiveHits = 0; // Contador de acertos consecutivos para o brinde (meta: 3)
     let availableQuestions = [...allQuestions];
     let isSpinning = false;
     let currentRotation = 0;
+    let soundEnabled = true;
+
+    // ==========================================
+    // SISTEMA DE ÁUDIO REALISTA (Web Audio API)
+    // ==========================================
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Som suave, acolhedor e amigável da roleta (Estilo marimba/gotícula de madeira)
+    function playRouletteClickSound(speedRatio = 0.5) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        // Variação orgânica suave de tom para toque musical agradável
+        const jitter = 0.97 + Math.random() * 0.06;
+        const now = ctx.currentTime;
+
+        // Frequência base musical acolhedora (timbre quente de marimba)
+        const baseFreq = (560 + (1 - speedRatio) * 70) * jitter;
+
+        // Camada 1: Tom puro suave (onda senoidal com ataque macio e decaimento musical)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+
+        // Micro-inflexão de afinação simulando impacto macio de madeira
+        osc.frequency.setValueAtTime(baseFreq * 1.18, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.012);
+
+        // Volume suave e balanceado, sem ruídos agressivos
+        const tapVol = 0.13 + (1 - speedRatio) * 0.06;
+        const decayTime = 0.032 + (1 - speedRatio) * 0.018;
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(tapVol, now + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + decayTime);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + decayTime + 0.01);
+
+        // Camada 2: Ressonância harmônica sutil (estilo kalimba/madeira relaxante)
+        const harmOsc = ctx.createOscillator();
+        const harmGain = ctx.createGain();
+        harmOsc.type = "sine";
+        harmOsc.frequency.setValueAtTime(baseFreq * 1.5, now);
+
+        harmGain.gain.setValueAtTime(0.001, now);
+        harmGain.gain.linearRampToValueAtTime(tapVol * 0.28, now + 0.002);
+        harmGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.022);
+
+        harmOsc.connect(harmGain);
+        harmGain.connect(ctx.destination);
+        harmOsc.start(now);
+        harmOsc.stop(now + 0.025);
+
+        // Camada 3: Micro-toque aveludado (filtro passa-baixas macio, sem chiado agudo)
+        const snapLen = Math.floor(ctx.sampleRate * 0.008);
+        const noiseBuffer = ctx.createBuffer(1, snapLen, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < snapLen; i++) {
+          output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (snapLen * 0.3));
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        const lowpass = ctx.createBiquadFilter();
+        lowpass.type = "lowpass";
+        lowpass.frequency.setValueAtTime(750, now);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.03, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.007);
+
+        noise.connect(lowpass);
+        lowpass.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    // Som suave de brisa harmônica no giro inicial
+    function playWheelWhooshSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const dur = 1.2;
+
+        // Acorde harmônico sutil e relaxante em vez de ruído branco áspero
+        const freqs = [330, 440];
+        freqs.forEach(f => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(f * 0.85, now);
+          osc.frequency.exponentialRampToValueAtTime(f * 1.1, now + 0.35);
+          osc.frequency.exponentialRampToValueAtTime(f * 0.9, now + dur);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.035, now + 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + dur + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Sino cristalino suave e alegre quando a roleta para na fatia escolhida (Tríade Maior)
+    function playSectorChimeSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const chimeNotes = [
+          { f: 783.99, t: 0.0, d: 0.45 },   // Sol 5 (acolhedor)
+          { f: 1046.50, t: 0.07, d: 0.55 }, // Dó 6 (luminoso)
+          { f: 1318.51, t: 0.15, d: 0.7 }   // Mi 6 (alegre)
+        ];
+        chimeNotes.forEach(note => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = now + note.t;
+          osc.frequency.setValueAtTime(note.f, startT);
+          gain.gain.setValueAtTime(0, startT);
+          gain.gain.linearRampToValueAtTime(0.18, startT + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0006, startT + note.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + note.d + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Som suave e agradável de clique no botão GIRAR
+    function playButtonClickSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.06);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.2, now + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } catch (e) {}
+    }
+
+    // Som de acerto comum (jingle alegre com brilho)
+    function playCorrectSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = ctx.currentTime + idx * 0.07;
+          osc.frequency.setValueAtTime(freq, startT);
+          gain.gain.setValueAtTime(0.0, startT);
+          gain.gain.linearRampToValueAtTime(0.28, startT + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, startT + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + 0.36);
+        });
+      } catch (e) {}
+    }
+
+    // Som triunfal especial: FANFARRA DO BRINDE! (3 acertos seguidos)
+    function playPrizeFanfareSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const melody = [
+          { f: 523.25, d: 0.14, t: 0 },
+          { f: 659.25, d: 0.14, t: 0.14 },
+          { f: 783.99, d: 0.14, t: 0.28 },
+          { f: 1046.50, d: 0.45, t: 0.42 },
+          { f: 1318.51, d: 0.65, t: 0.56 }
+        ];
+        melody.forEach(item => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          const startT = ctx.currentTime + item.t;
+          osc.frequency.setValueAtTime(item.f, startT);
+          gain.gain.setValueAtTime(0.0, startT);
+          gain.gain.linearRampToValueAtTime(0.35, startT + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, startT + item.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + item.d + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Som suave de resposta errada (acolhedor)
+    function playWrongSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const notes = [320, 240];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = ctx.currentTime + idx * 0.13;
+          osc.frequency.setValueAtTime(freq, startT);
+          gain.gain.setValueAtTime(0.2, startT);
+          gain.gain.exponentialRampToValueAtTime(0.01, startT + 0.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + 0.22);
+        });
+      } catch (e) {}
+    }
+
+    // Oscilação física do ponteiro da roleta com deflexão dinâmica
+    function triggerPointerTick(speedRatio = 0.5) {
+      const pointer = document.getElementById("wheelPointer");
+      if (pointer) {
+        const defAngle = -10 - (1 - speedRatio) * 9;
+        pointer.style.transform = `translateX(-50%) rotate(${defAngle}deg)`;
+        const returnMs = Math.round(35 + (1 - speedRatio) * 45);
+        setTimeout(() => {
+          pointer.style.transform = "translateX(-50%) rotate(0deg)";
+        }, returnMs);
+      }
+      if (navigator.vibrate) {
+        try { navigator.vibrate(speedRatio < 0.25 ? 16 : 8); } catch (e) {}
+      }
+    }
 
     const canvas = document.getElementById("wheelCanvas");
     const ctx = canvas.getContext("2d");
     const numSectors = sectors.length;
     const arc = (2 * Math.PI) / numSectors;
 
+    const rimStudElements = [];
+
     function createRimStuds() {
-      const rim = document.getElementById("rimContainer");
-      const numStuds = 20;
-      const radiusPercent = 48;
-
-      for (let i = 0; i < numStuds; i++) {
-        const angle = (i * (2 * Math.PI / numStuds)) - Math.PI / 2;
-        if (Math.abs(angle + Math.PI / 2) < 0.2) continue;
-
-        const stud = document.createElement("div");
-        stud.className = "rim-stud";
-        const x = 50 + radiusPercent * Math.cos(angle);
-        const y = 50 + radiusPercent * Math.sin(angle);
-        stud.style.left = `${x}%`;
-        stud.style.top = `${y}%`;
-        stud.style.transform = "translate(-50%, -50%)";
-        rim.appendChild(stud);
-      }
+      // Borda branca e pinos externos removidos para design minimalista
+      rimStudElements.length = 0;
     }
 
     createRimStuds();
 
-    function drawWheel() {
+    function updateRimChaserLights() {
+      const total = rimStudElements.length;
+      if (total === 0) return;
+      const activeIdx = Math.floor(((currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) / (2 * Math.PI)) * total) % total;
+      for (let i = 0; i < total; i++) {
+        if (i === activeIdx || i === (activeIdx + 1) % total) {
+          rimStudElements[i].classList.add("lit");
+        } else {
+          rimStudElements[i].classList.remove("lit");
+        }
+      }
+    }
+
+    function flashRimCelebration() {
+      rimStudElements.forEach(s => s.classList.add("lit"));
+      setTimeout(() => rimStudElements.forEach(s => s.classList.remove("lit")), 160);
+      setTimeout(() => rimStudElements.forEach(s => s.classList.add("lit")), 320);
+      setTimeout(() => rimStudElements.forEach(s => s.classList.remove("lit")), 600);
+    }
+
+    function drawWheel(highlightIndex = -1) {
       const radius = canvas.width / 2;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -939,7 +1916,29 @@
         ctx.lineTo(radius, radius);
         ctx.fill();
 
-        // Texto Horizontal com Quebra de Linha Inteligente
+        // Linhas divisórias elegantes entre as fatias
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.stroke();
+
+        // Se for a fatia vencedora em destaque, aplica brilho de vitória
+        if (highlightIndex === i) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(radius, radius);
+          ctx.arc(radius, radius, radius - 4, angle, angle + arc);
+          ctx.lineTo(radius, radius);
+          ctx.fillStyle = "rgba(255, 255, 255, 0.32)";
+          ctx.fill();
+          ctx.lineWidth = 8;
+          ctx.strokeStyle = "#facc15";
+          ctx.shadowColor = "#facc15";
+          ctx.shadowBlur = 24;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Renderização dos textos em orientação horizontal perfeita
         ctx.save();
         ctx.translate(radius, radius);
         ctx.rotate(angle + arc / 2);
@@ -950,26 +1949,29 @@
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "#ffffff";
-        ctx.font = "900 32px 'Segoe UI', Arial, sans-serif";
-        ctx.shadowColor = "rgba(0,0,0,0.7)";
-        ctx.shadowBlur = 6;
+        ctx.font = highlightIndex === i ? "900 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" : "900 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+        ctx.shadowColor = highlightIndex === i ? "rgba(234, 179, 8, 0.9)" : "rgba(0, 0, 0, 0.65)";
+        ctx.shadowBlur = highlightIndex === i ? 12 : 6;
         
         const label = sectors[i].label;
-        if (label === "Saúde da Mulher") {
-          ctx.fillText("Saúde da", 0, -18);
-          ctx.fillText("Mulher", 0, 18);
-        } else if (label === "Saúde do Homem") {
-          ctx.fillText("Saúde do", 0, -18);
-          ctx.fillText("Homem", 0, 18);
-        } else if (label === "Imunização e Vacinas") {
-          ctx.fillText("Imunização &", 0, -18);
-          ctx.fillText("Vacinas", 0, 18);
-        } else if (label === "Saúde Mental") {
-          ctx.fillText("Saúde", 0, -18);
-          ctx.fillText("Mental", 0, 18);
-        } else if (label === "Hipertensão e Diabetes") {
-          ctx.fillText("Hipertensão &", 0, -18);
-          ctx.fillText("Diabetes", 0, 18);
+        if (label === "Emoções e Sentimentos") {
+          ctx.fillText("Emoções &", 0, -16);
+          ctx.fillText("Sentimentos", 0, 16);
+        } else if (label === "Amizades e Relacionamentos") {
+          ctx.fillText("Amizades &", 0, -16);
+          ctx.fillText("Relações", 0, 16);
+        } else if (label === "Redes Sociais e Autoestima") {
+          ctx.fillText("Redes Sociais", 0, -16);
+          ctx.fillText("& Autoestima", 0, 16);
+        } else if (label === "Ansiedade e Estresse") {
+          ctx.fillText("Ansiedade &", 0, -16);
+          ctx.fillText("Estresse", 0, 16);
+        } else if (label === "Autocuidado e Hábitos Saudáveis") {
+          ctx.fillText("Autocuidado &", 0, -16);
+          ctx.fillText("Hábitos", 0, 16);
+        } else if (label === "Mitos, Verdades e Saúde Mental") {
+          ctx.fillText("Mitos &", 0, -16);
+          ctx.fillText("Verdades", 0, 16);
         } else {
           ctx.fillText(label, 0, 0);
         }
@@ -979,81 +1981,125 @@
 
     drawWheel();
 
+    // ==========================================
+    // 3. ANIMAÇÃO DE GIRO E FÍSICA REALISTA
+    // ==========================================
+    let lastPinIndex = -1;
+
     function spinWheel() {
       if (isSpinning) return;
-
-      const activeLvls = getActiveLevels();
-      if (activeLvls.length === 0) {
-        alert("Por favor, selecione ao menos um nível de dificuldade nas Configurações!");
-        return;
-      }
-
       isSpinning = true;
 
-      const spinRounds = 6 + Math.random() * 5;
+      // Som realista de clique no botão e vento de alta rotação
+      playButtonClickSound();
+      playWheelWhooshSound();
+
+      // Feedback visual no Botão Central
+      const hubBtn = document.getElementById("spinHubBtn");
+      const hubText = document.getElementById("hubMainText");
+      const hubSub = document.getElementById("hubSubText");
+      if (hubBtn) hubBtn.classList.add("is-spinning");
+      if (hubText) hubText.textContent = "Girando...";
+      if (hubSub) hubSub.textContent = "Aguarde...";
+
+      // Vibração tátil no toque (se suportado no tablet)
+      if (navigator.vibrate) {
+        try { navigator.vibrate(30); } catch (e) {}
+      }
+
+      // 6 a 10 voltas completas + ângulo de parada aleatório
+      const spinRounds = 6 + Math.random() * 4.5;
       const extraAngle = Math.random() * 2 * Math.PI;
       const totalSpin = spinRounds * 2 * Math.PI + extraAngle;
-      const duration = 4000;
+      const duration = 4400; // Tempo perfeito de suspense dramático
       const start = performance.now();
       const initialRotation = currentRotation;
+      lastPinIndex = -1;
 
       function animate(time) {
         const elapsed = time - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const rawProgress = Math.min(elapsed / duration, 1);
+        
+        // Curva de física com desaceleração quintic com suspense dramático
+        const easeOut = 1 - Math.pow(1 - rawProgress, 4.0);
+
+        // Velocidade relativa atual (1.0 = rápida, 0.04 = quase parando)
+        const speedRatio = Math.max(0.04, Math.pow(1 - rawProgress, 2.5));
 
         currentRotation = initialRotation + totalSpin * easeOut;
         drawWheel();
+        updateRimChaserLights();
 
-        if (progress < 1) {
+        // Detecção de passagem de pino (20 pinos na circunferência = pi/10)
+        const pinAngle = Math.PI / 10;
+        const currentPin = Math.floor(currentRotation / pinAngle);
+        if (currentPin !== lastPinIndex) {
+          lastPinIndex = currentPin;
+          // Som de clique mecânico com afinação e peso dinâmicos + oscilação física do ponteiro
+          playRouletteClickSound(speedRatio);
+          triggerPointerTick(speedRatio);
+        }
+
+        if (rawProgress < 1) {
           requestAnimationFrame(animate);
         } else {
-          isSpinning = false;
-          determineSector();
+          // Fase de acomodação elástica / micro settle bounce (física real de lingueta mecânica)
+          const targetRotation = initialRotation + totalSpin;
+          const bounceStart = performance.now();
+          const bounceDuration = 200;
+
+          function settleBounce(bounceTime) {
+            const bElapsed = bounceTime - bounceStart;
+            const bProgress = Math.min(bElapsed / bounceDuration, 1);
+            if (bProgress < 1) {
+              const bounceOffset = Math.sin(bProgress * Math.PI * 3) * Math.exp(-bProgress * 5) * 0.015;
+              currentRotation = targetRotation + bounceOffset;
+              drawWheel();
+              requestAnimationFrame(settleBounce);
+            } else {
+              currentRotation = targetRotation;
+              finalizeSpin();
+            }
+          }
+
+          requestAnimationFrame(settleBounce);
         }
+      }
+
+      function finalizeSpin() {
+        isSpinning = false;
+        if (hubBtn) hubBtn.classList.remove("is-spinning");
+        if (hubText) hubText.textContent = "Girar";
+        if (hubSub) hubSub.textContent = "Toque aqui";
+
+        // Apaga luzes do chaser do aro
+        rimStudElements.forEach(s => s.classList.remove("lit"));
+
+        // Determina o setor vencedor
+        const normalizedAngle = (currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+        const pointerAngle = (3 * Math.PI / 2 - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
+        const sectorIndex = Math.floor(pointerAngle / arc) % numSectors;
+        const selectedSector = sectors[sectorIndex];
+
+        // Efeitos de comemoração: sino da sorte + luzes do aro piscando + destaque na fatia
+        playSectorChimeSound();
+        flashRimCelebration();
+        drawWheel(sectorIndex);
+
+        // Aguarda 550ms para o participante ver e curtir a fatia sorteada antes da pergunta
+        setTimeout(() => {
+          drawWheel(-1);
+          openQuestionForTheme(selectedSector.label);
+        }, 550);
       }
 
       requestAnimationFrame(animate);
     }
 
-    function determineSector() {
-      const normalizedAngle = (currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-      const pointerAngle = (3 * Math.PI / 2 - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
-      const sectorIndex = Math.floor(pointerAngle / arc) % numSectors;
-      const selectedSector = sectors[sectorIndex];
-
-      openQuestionForTheme(selectedSector.label);
-    }
-
     // ==========================================
-    // 3. PROGRESSÃO E SELEÇÃO DE PERGUNTAS
+
+    // 4. SELEÇÃO E EXIBIÇÃO DE PERGUNTAS
     // ==========================================
-    function getActiveLevels() {
-      const levels = [];
-      if (document.getElementById("cfg-lvl-1").checked) levels.push(1);
-      if (document.getElementById("cfg-lvl-2").checked) levels.push(2);
-      if (document.getElementById("cfg-lvl-3").checked) levels.push(3);
-      return levels.sort((a, b) => a - b);
-    }
-
-    function getTargetLevel() {
-      const levels = getActiveLevels();
-      if (levels.length === 0) return 1;
-
-      if (levels.length === 1) {
-        return levels[0];
-      }
-
-      if (levels.length === 2) {
-        if (questionsAnswered === 0) return levels[0];
-        return levels[1];
-      }
-
-      if (questionsAnswered === 0) return 1;
-      if (questionsAnswered === 1) return 2;
-      return 3;
-    }
-
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -1068,17 +2114,10 @@
     let currentCorrectLetter = "";
 
     function openQuestionForTheme(themeName) {
-      const targetLvl = getTargetLevel();
-      const activeLvls = getActiveLevels();
+      // Busca perguntas disponíveis para o tema sorteado
+      let pool = availableQuestions.filter(q => q.tema.toLowerCase() === themeName.toLowerCase());
 
-      let pool = availableQuestions.filter(q => q.tema.toLowerCase() === themeName.toLowerCase() && q.nivel === targetLvl);
-
-      if (pool.length === 0) {
-        pool = availableQuestions.filter(q => q.tema.toLowerCase() === themeName.toLowerCase() && activeLvls.includes(q.nivel));
-      }
-      if (pool.length === 0) {
-        pool = allQuestions.filter(q => q.tema.toLowerCase() === themeName.toLowerCase() && activeLvls.includes(q.nivel));
-      }
+      // Fallback caso todas as perguntas do tema já tenham sido respondidas na sessão
       if (pool.length === 0) {
         pool = allQuestions.filter(q => q.tema.toLowerCase() === themeName.toLowerCase());
       }
@@ -1090,11 +2129,10 @@
     function showQuestionModal(question) {
       activeQuestion = question;
       document.getElementById("modalTheme").textContent = question.tema;
-      document.getElementById("modalLevel").textContent = `Nível ${question.nivel} — ${question.nivel === 1 ? 'Fácil' : question.nivel === 2 ? 'Médio' : 'Difícil'}`;
       document.getElementById("modalQuestionText").textContent = question.pergunta;
 
       currentShuffledOptions = shuffleArray(question.opcoes);
-      const letters = ['a', 'b', 'c', 'd'];
+      const letters = ['A', 'B', 'C', 'D'];
       const correctIndex = currentShuffledOptions.indexOf(question.resposta_correta_texto);
       currentCorrectLetter = letters[correctIndex];
 
@@ -1103,8 +2141,11 @@
 
       letters.forEach((letter, idx) => {
         const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `<strong>${letter})</strong> ${currentShuffledOptions[idx]}`;
+        btn.className = "touch-option-btn";
+        btn.innerHTML = `
+          <span class="option-letter-badge">${letter}</span>
+          <span>${currentShuffledOptions[idx]}</span>
+        `;
         btn.onclick = () => handleAnswer(letter, btn);
         optsContainer.appendChild(btn);
       });
@@ -1112,8 +2153,34 @@
       document.getElementById("questionModal").classList.add("active");
     }
 
+    function updatePrizeDots() {
+      const prizeChip = document.getElementById("prize-chip");
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById(`p-dot-${i}`);
+        if (dot) {
+          if (i <= consecutiveHits) {
+            dot.classList.add("active");
+          } else {
+            dot.classList.remove("active");
+          }
+        }
+      }
+      if (prizeChip) {
+        if (consecutiveHits >= 3) {
+          prizeChip.classList.add("is-complete");
+        } else {
+          prizeChip.classList.remove("is-complete");
+        }
+      }
+    }
+
+    function resetStreak() {
+      consecutiveHits = 0;
+      updatePrizeDots();
+    }
+
     function handleAnswer(selectedLetter, clickedBtn) {
-      const allBtns = document.querySelectorAll(".option-btn");
+      const allBtns = document.querySelectorAll(".touch-option-btn");
       allBtns.forEach(b => b.disabled = true);
 
       const isCorrect = (selectedLetter === currentCorrectLetter);
@@ -1122,30 +2189,44 @@
         clickedBtn.classList.add("correct");
         availableQuestions = availableQuestions.filter(q => q !== activeQuestion);
         
-        currentScore += 10;
-        questionsAnswered++;
+        totalHits++;
+        consecutiveHits++;
         updateScoreboard();
+        updatePrizeDots();
 
-        setTimeout(() => {
-          closeQuestionModal();
-          showSuccessPopup();
-        }, 800);
+        // Se acertou 3 seguidas: Ganha o Brinde!
+        if (consecutiveHits === 3) {
+          setTimeout(() => {
+            closeQuestionModal();
+            showPrizePopup();
+          }, 850);
+        } else {
+          playCorrectSound();
+          setTimeout(() => {
+            closeQuestionModal();
+            showSuccessPopup();
+          }, 850);
+        }
       } else {
         clickedBtn.classList.add("wrong");
         allBtns.forEach((b, idx) => {
-          const letter = ['a','b','c','d'][idx];
+          const letter = ['A','B','C','D'][idx];
           if (letter === currentCorrectLetter) {
             b.classList.add("correct");
           }
         });
 
-        const scoreAtError = currentScore;
-        const qIndexAtError = questionsAnswered;
+        playWrongSound();
+        totalMisses++;
+        const hadStreak = consecutiveHits > 0;
+        consecutiveHits = 0;
+        updateScoreboard();
+        updatePrizeDots();
 
         setTimeout(() => {
           closeQuestionModal();
-          handleWrongAnswer(scoreAtError, qIndexAtError);
-        }, 1200);
+          handleWrongAnswer(hadStreak);
+        }, 1300);
       }
     }
 
@@ -1154,86 +2235,172 @@
     }
 
     // ==========================================
-    // 4. FEEDBACKS COM CONFETES NA FRENTE
+    // 5. FEEDBACKS COM CONFETES & ACOLHIMENTO
     // ==========================================
-    function triggerFrontConfetti() {
-      confetti({
-        particleCount: 130,
+    function safeConfetti(opts) {
+      if (typeof confetti === 'function') {
+        try { confetti(opts); } catch (e) {}
+      }
+    }
+
+    function triggerConfetti() {
+      safeConfetti({
+        particleCount: 120,
         spread: 80,
-        origin: { y: 0.55 },
+        origin: { y: 0.5 },
         zIndex: 9999
       });
+    }
+
+    let prizeTimer = null;
+    let prizeConfettiInterval = null;
+
+    function finishPrizeAndReset() {
+      if (prizeTimer) {
+        clearInterval(prizeTimer);
+        prizeTimer = null;
+      }
+      if (prizeConfettiInterval) {
+        clearInterval(prizeConfettiInterval);
+        prizeConfettiInterval = null;
+      }
+      closePopup();
+      // Reinicia completamente o jogo para o próximo participante
+      resetGame(false);
+    }
+
+    // Popup de Vitória Especial: BRINDE CONQUISTADO (com contagem regressiva e auto-reset)
+    function showPrizePopup() {
+      playPrizeFanfareSound();
+      const popupCard = document.getElementById("popupCard");
+      
+      let secondsLeft = 10;
+      const totalSeconds = 10;
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap" style="background: #fef3c7; color: #b45309; font-size: 3rem;">🎁</div>
+        <h2 class="popup-title" style="color: #b45309; font-size: 1.85rem;">PARABÉNS! VOCÊ GANHOU O BRINDE!</h2>
+        <p style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 12px 0;">
+          Você acertou <strong>3 perguntas seguidas</strong> sobre Saúde Mental!
+        </p>
+        <div class="prize-alert-banner">
+          🎉 Mostre esta tela para a equipe e retire o seu brinde!
+        </div>
+
+        <div class="prize-countdown-box">
+          <div class="prize-countdown-text">
+            <span>⏱️</span>
+            <span>Novo jogo iniciando em <strong class="prize-countdown-num" id="prizeCountdown">${secondsLeft}</strong>s</span>
+          </div>
+          <div class="prize-progress-track">
+            <div class="prize-progress-fill" id="prizeProgressBar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <button class="btn-continue-prize" onclick="finishPrizeAndReset();">
+          Iniciar Novo Jogo Agora
+        </button>
+      `;
+
+      openPopup();
+
+      // Chuva intensa de confetes imediata
+      safeConfetti({
+        particleCount: 180,
+        spread: 90,
+        origin: { y: 0.45 },
+        colors: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#facc15'],
+        zIndex: 9999
+      });
+
+      // Efeito de confetes periódicos durante a comemoração
+      if (prizeConfettiInterval) clearInterval(prizeConfettiInterval);
+      prizeConfettiInterval = setInterval(() => {
+        safeConfetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.5 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#facc15'],
+          zIndex: 9999
+        });
+      }, 2500);
+
+      // Contagem regressiva para reiniciar automaticamente
+      if (prizeTimer) clearInterval(prizeTimer);
+      prizeTimer = setInterval(() => {
+        secondsLeft--;
+        const countdownEl = document.getElementById("prizeCountdown");
+        const barEl = document.getElementById("prizeProgressBar");
+
+        if (countdownEl) {
+          countdownEl.textContent = secondsLeft;
+        }
+        if (barEl) {
+          const pct = Math.max(0, (secondsLeft / totalSeconds) * 100);
+          barEl.style.width = pct + "%";
+        }
+
+        if (secondsLeft <= 0) {
+          finishPrizeAndReset();
+        }
+      }, 1000);
     }
 
     function showSuccessPopup() {
       const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
       const popupCard = document.getElementById("popupCard");
       
+      const missingForPrize = 3 - consecutiveHits;
+      const prizeTip = (missingForPrize === 1)
+        ? "🔥 <strong>Incrível! Falta apenas 1 acerto seguido para ganhar o brinde!</strong>"
+        : `🎯 <strong>Você acertou ${consecutiveHits} seguida(s)! Faltam ${missingForPrize} para o brinde!</strong>`;
+
       popupCard.innerHTML = `
-        <h2 style="color: var(--primary);">🎉 Parabéns! Você acertou!</h2>
-        <div class="motivational-quote-highlight">
-          ${randomQuote}
+        <div class="feedback-icon-wrap success">🎉</div>
+        <h2 class="popup-title" style="color: #0f766e;">Parabéns! Você acertou!</h2>
+        <div class="feedback-quote">
+          "${randomQuote}"
         </div>
-      `;
-
-      openPopup();
-      triggerFrontConfetti();
-
-      setTimeout(() => {
-        closePopup();
-      }, 4000);
-    }
-
-    function handleWrongAnswer(finalScore, qIndex) {
-      const popupCard = document.getElementById("popupCard");
-      const title = (qIndex === 0) ? "Que pena! você errou!" : "Que pena! Você foi muito bem!";
-
-      popupCard.innerHTML = `
-        <div class="error-x-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+        <div style="background: #fefce8; border: 1.5px solid #fef08a; padding: 12px 16px; border-radius: 14px; margin-top: 14px; color: #854d0e; font-size: 0.98rem;">
+          ${prizeTip}
         </div>
-        <h2 style="color: var(--danger);">${title}</h2>
-        <p style="font-size: 1.15rem; color: var(--text-muted); margin-top: 6px;">Pontuação total da rodada: <strong>${finalScore} pontos</strong></p>
-      `;
-
-      openPopup();
-      const isTop10 = saveScoreToRank(finalScore);
-      resetGame(false);
-
-      setTimeout(() => {
-        closePopup();
-        if (isTop10 && finalScore > 0) {
-          setTimeout(() => {
-            showTop10Popup();
-          }, 300);
-        }
-      }, 3000);
-    }
-
-    function showTop10Popup() {
-      const popupCard = document.getElementById("popupCard");
-      popupCard.innerHTML = `
-        <h2 style="color: var(--accent);">🏆 Incrível!</h2>
-        <p style="font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin: 14px 0;">
-          Parabéns! Você ficou entre os 10 melhores
+        <p style="margin-top: 12px; font-weight: 700; color: #059669; font-size: 1.05rem;">
+          Total de acertos na sessão: <strong>${totalHits}</strong>
         </p>
-        <p style="color: var(--text-muted); font-size: 1.05rem;">Confira a sua posição na aba <strong>Rank</strong>!</p>
       `;
 
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        colors: ['#f1c40f', '#e67e22', '#10b981'],
-        zIndex: 9999
-      });
-
       openPopup();
+      triggerConfetti();
+
       setTimeout(() => {
         closePopup();
-      }, 4000);
+      }, 3400);
+    }
+
+    function handleWrongAnswer(hadStreak = false) {
+      const popupCard = document.getElementById("popupCard");
+      const title = "Não foi dessa vez!";
+      const streakMsg = hadStreak 
+        ? "<div style='background: #fff1f2; border: 1px solid #fecdd3; padding: 10px 14px; border-radius: 12px; margin-top: 10px; color: #be123c; font-size: 0.92rem;'>A sequência para o brinde recomeçou. Gire a roleta e tente novamente!</div>"
+        : "";
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap error">💡</div>
+        <h2 class="popup-title" style="color: #dc2626;">${title}</h2>
+        <p style="font-size: 1.05rem; color: #475569; margin-top: 8px; line-height: 1.4;">
+          Não desanime! O aprendizado sobre saúde emocional é contínuo.
+        </p>
+        ${streakMsg}
+        <div class="popup-score-summary" style="margin-top: 14px;">
+          Placar atual: <span style="color: #059669; font-weight: 800;">${totalHits} acertos</span> &bull; <span style="color: #dc2626; font-weight: 800;">${totalMisses} erros</span>
+        </div>
+      `;
+
+      openPopup();
+
+      setTimeout(() => {
+        closePopup();
+      }, 3400);
     }
 
     function openPopup() {
@@ -1241,20 +2408,32 @@
     }
 
     function closePopup() {
+      if (prizeTimer) {
+        clearInterval(prizeTimer);
+        prizeTimer = null;
+      }
+      if (prizeConfettiInterval) {
+        clearInterval(prizeConfettiInterval);
+        prizeConfettiInterval = null;
+      }
       document.getElementById("feedbackPopup").classList.remove("active");
     }
 
     // ==========================================
-    // 5. ESTADO E RANKING
+    // 6. ESTADO E PLACAR (ACERTOS & ERROS & BRINDE)
     // ==========================================
     function updateScoreboard() {
-      document.getElementById("current-score").innerHTML = `${currentScore} <span>pts</span>`;
-      document.getElementById("q-counter").textContent = questionsAnswered;
+      const hitsEl = document.getElementById("hits-counter");
+      const missesEl = document.getElementById("misses-counter");
+      if (hitsEl) hitsEl.textContent = totalHits;
+      if (missesEl) missesEl.textContent = totalMisses;
+      updatePrizeDots();
     }
 
     function resetGame(manual = true) {
-      currentScore = 0;
-      questionsAnswered = 0;
+      totalHits = 0;
+      totalMisses = 0;
+      consecutiveHits = 0;
       availableQuestions = [...allQuestions];
       updateScoreboard();
       if (manual) {
@@ -1263,120 +2442,27 @@
       }
     }
 
-    function getRankData() {
-      const data = localStorage.getItem("roleta_aps_cni_rank");
-      return data ? JSON.parse(data) : [];
-    }
-
-    function saveScoreToRank(score) {
-      if (score <= 0) return false;
-
-      let rank = getRankData();
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-      rank.push({ score: score, date: dateStr });
-      rank.sort((a, b) => b.score - a.score);
-      
-      const top10 = rank.slice(0, 10);
-      localStorage.setItem("roleta_aps_cni_rank", JSON.stringify(top10));
-      renderRankTable();
-
-      const index = top10.findIndex(item => item.score === score && item.date === dateStr);
-      return index >= 0 && index < 10;
-    }
-
-    function renderRankTable() {
-      const tbody = document.getElementById("rank-tbody");
-      const rank = getRankData();
-
-      if (rank.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 25px;">Nenhuma pontuação registrada ainda. Gire a roleta e jogue!</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = rank.map((item, idx) => {
-        let badgeClass = "badge-pos";
-        if (idx === 0) badgeClass += " top-1";
-        else if (idx === 1) badgeClass += " top-2";
-        else if (idx === 2) badgeClass += " top-3";
-
-        return `
-          <tr>
-            <td><span class="${badgeClass}">${idx + 1}</span></td>
-            <td><strong>${item.score} pts</strong></td>
-            <td style="color: var(--text-muted);">${item.date}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function clearRank() {
-      if (confirm("Deseja realmente zerar todo o histórico do Rank?")) {
-        localStorage.removeItem("roleta_aps_cni_rank");
-        renderRankTable();
-      }
-    }
-
     // ==========================================
-    // 6. CONFIGURAÇÕES
+    // 7. FUNÇÕES AUXILIARES (SOM & TELA CHEIA)
     // ==========================================
-    function handleConfigChange() {
-      const active = getActiveLevels();
-      if (active.length === 0) {
-        alert("Pelo menos um nível de dificuldade deve permanecer ativo!");
-        document.getElementById("cfg-lvl-1").checked = true;
-      }
-      saveConfig();
-    }
-
-    function saveConfig() {
-      const cfg = {
-        lvl1: document.getElementById("cfg-lvl-1").checked,
-        lvl2: document.getElementById("cfg-lvl-2").checked,
-        lvl3: document.getElementById("cfg-lvl-3").checked
-      };
-      localStorage.setItem("roleta_aps_cni_cfg", JSON.stringify(cfg));
-    }
-
-    function loadConfig() {
-      const cfgData = localStorage.getItem("roleta_aps_cni_cfg");
-      if (cfgData) {
-        const cfg = JSON.parse(cfgData);
-        document.getElementById("cfg-lvl-1").checked = cfg.lvl1;
-        document.getElementById("cfg-lvl-2").checked = cfg.lvl2;
-        document.getElementById("cfg-lvl-3").checked = cfg.lvl3;
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById("btn-sound-toggle");
+      if (btn) {
+        btn.innerHTML = soundEnabled ? '<span>🔊</span><span>Som</span>' : '<span>🔇</span><span>Mudo</span>';
       }
     }
 
-    function resetConfig() {
-      document.getElementById("cfg-lvl-1").checked = true;
-      document.getElementById("cfg-lvl-2").checked = true;
-      document.getElementById("cfg-lvl-3").checked = true;
-      saveConfig();
-      resetGame(true);
-      alert("Configurações restauradas para o padrão e jogo reiniciado!");
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".nav-tab").forEach(tab => tab.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
-
-      if (tabId === 'roleta') {
-        document.querySelector(".nav-tab:nth-child(1)").classList.add("active");
-        document.getElementById("tab-roleta").classList.add("active");
-      } else if (tabId === 'rank') {
-        document.querySelector(".nav-tab:nth-child(2)").classList.add("active");
-        document.getElementById("tab-rank").classList.add("active");
-        renderRankTable();
-      } else if (tabId === 'config') {
-        document.querySelector(".nav-tab:nth-child(3)").classList.add("active");
-        document.getElementById("tab-config").classList.add("active");
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
       }
     }
 
-    loadConfig();
-    renderRankTable();
+    // Inicialização
+    updateScoreboard();
   </script>
 </body>
 </html>
