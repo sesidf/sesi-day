@@ -61,14 +61,14 @@
     /* Container Principal Totalmente Adaptativo */
     .tablet-screen {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1350px;
       flex: 1;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      gap: clamp(8px, 1.5vh, 14px);
+      gap: clamp(6px, 1.2vh, 14px);
       position: relative;
     }
 
@@ -191,18 +191,18 @@
     }
 
     .stat-chip-label {
-      font-size: clamp(0.56rem, 0.88vw, 0.64rem);
-      font-weight: 700;
+      font-size: clamp(0.58rem, 0.92vw, 0.68rem);
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #64748b;
+      letter-spacing: 0.6px;
+      color: #475569;
       line-height: 1;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
     .stat-chip-val {
-      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
-      font-weight: 800;
+      font-size: clamp(1.15rem, 2vw, 1.4rem);
+      font-weight: 900;
       line-height: 1;
       color: #0f172a;
     }
@@ -212,7 +212,7 @@
     }
 
     .stat-chip.misses-chip .stat-chip-val {
-      color: #e11d48;
+      color: #dc2626;
     }
 
     /* Chip de Meta de Brinde */
@@ -367,14 +367,14 @@
       justify-content: center;
       position: relative;
       min-height: 0;
-      padding: clamp(6px, 1.5vh, 12px);
+      padding: clamp(4px, 1vh, 12px);
     }
 
-    /* Moldura da Roleta (Escala fluida considerando altura e largura) */
+    /* Moldura da Roleta (Escala dinamicamente aproveitando o máximo da tela) */
     .wheel-outer-rim {
       position: relative;
-      width: min(600px, min(80vmin, 62vh));
-      height: min(600px, min(80vmin, 62vh));
+      width: min(860px, min(92vw, 75vh));
+      height: min(860px, min(92vw, 75vh));
       aspect-ratio: 1 / 1;
       border-radius: 50%;
       background: transparent;
@@ -399,17 +399,17 @@
     /* Ponteiro Superior Esculpido com Física de Batida */
     .wheel-pointer-container {
       position: absolute;
-      top: clamp(-20px, -3.5vmin, -25px);
+      top: clamp(-24px, -3.8vmin, -34px);
       left: 50%;
       transform: translateX(-50%);
-      transform-origin: 50% 16px;
-      width: clamp(34px, 7vmin, 44px);
-      height: clamp(44px, 9vmin, 58px);
+      transform-origin: 50% clamp(14px, 2vmin, 20px);
+      width: clamp(36px, 6.5vmin, 54px);
+      height: clamp(48px, 8.5vmin, 70px);
       z-index: 25;
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.28));
+      filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.26));
       transition: transform 0.07s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       pointer-events: none;
     }
@@ -429,11 +429,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: clamp(80px, 20vmin, 120px);
-      height: clamp(80px, 20vmin, 120px);
+      width: clamp(78px, 19%, 140px);
+      height: clamp(78px, 19%, 140px);
       border-radius: 50%;
       background: #ffffff;
-      border: clamp(2px, 0.5vmin, 3.5px) solid #f1f5f9;
+      border: clamp(2.5px, 0.4vmin, 4px) solid #f1f5f9;
       box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.06);
       display: flex;
       align-items: center;
@@ -456,7 +456,7 @@
     }
 
     .wheel-spin-hub .hub-main-text {
-      font-size: clamp(0.82rem, 2.3vmin, 1.15rem);
+      font-size: clamp(0.85rem, 2.5vmin, 1.25rem);
       font-weight: 800;
       color: #0f172a;
       letter-spacing: clamp(1px, 0.4vmin, 2.5px);
@@ -469,9 +469,26 @@
       color: #0d9488;
     }
 
+    /* Animação suave de pulso ("respiração") quando ocioso - Call To Action para eventos */
+    @keyframes hubBreath {
+      0%, 100% {
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12), 0 0 0 0 rgba(13, 148, 136, 0.45);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16), 0 0 0 10px rgba(13, 148, 136, 0);
+        transform: translate(-50%, -50%) scale(1.035);
+      }
+    }
+
+    .wheel-spin-hub.idle-pulse {
+      animation: hubBreath 2.6s ease-in-out infinite;
+    }
+
     /* Estado quando a roleta está girando */
     .wheel-spin-hub.is-spinning {
       pointer-events: none;
+      animation: none !important;
       background: #f8fafc;
       border-color: #e2e8f0;
       transform: translate(-50%, -50%) scale(0.97);
@@ -799,12 +816,21 @@
        SISTEMA RESPONSIVO & ADAPTATIVO COMPLETO (Mobile, Tablet, Desktop)
        ======================================================== */
 
-    /* Tablet Vertical / Telas Médias (<= 920px) */
-    @media (max-width: 920px) {
+    /* Telas em Modo Retrato / Vertical (Tablets em pé, Celulares e Monitores Verticais) */
+    @media (orientation: portrait) {
+      .wheel-outer-rim {
+        /* Aproveita até 88% da largura do tablet mantendo proporção ideal */
+        width: min(840px, min(88vw, 68vh));
+        height: min(840px, min(88vw, 68vh));
+      }
+    }
+
+    /* Telas Médias / Tablets Compactos (<= 720px) */
+    @media (max-width: 720px) {
       .tablet-header {
         flex-direction: column;
-        gap: 10px;
-        padding: 10px 16px;
+        gap: 8px;
+        padding: 8px 14px;
       }
       .brand-title {
         width: 100%;
@@ -813,6 +839,14 @@
       .stats-group {
         width: 100%;
         justify-content: center;
+      }
+    }
+
+    /* Telas Grandes em Modo Paisagem (Monitores, TVs e Desktop com boa altura) */
+    @media (min-height: 850px) and (orientation: landscape) {
+      .wheel-outer-rim {
+        width: min(880px, min(88vw, 76vh));
+        height: min(880px, min(88vw, 76vh));
       }
     }
 
@@ -960,8 +994,8 @@
         font-size: 0.95rem;
       }
       .wheel-outer-rim {
-        width: min(320px, 58vh);
-        height: min(320px, 58vh);
+        width: min(350px, 64vh);
+        height: min(350px, 64vh);
       }
       .tablet-footer-tip {
         display: none; /* Em modo paisagem curto, prioriza o espaço para a roleta */
@@ -1074,8 +1108,8 @@
         <!-- Canvas 900x900 em alta resolução -->
         <canvas id="wheelCanvas" width="900" height="900"></canvas>
 
-        <!-- Botão Central: Minimalista e Sem Emoji -->
-        <div class="wheel-spin-hub" id="spinHubBtn" onclick="event.stopPropagation(); spinWheel();" title="Toque para girar a roleta">
+        <!-- Botão Central: Minimalista e com Pulso Suave Convidativo -->
+        <div class="wheel-spin-hub idle-pulse" id="spinHubBtn" onclick="event.stopPropagation(); spinWheel();" title="Toque para girar a roleta">
           <span class="hub-main-text" id="hubMainText">Girar</span>
         </div>
       </div>
@@ -1916,9 +1950,17 @@
         ctx.lineTo(radius, radius);
         ctx.fill();
 
-        // Linhas divisórias elegantes entre as fatias
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+        // Efeito sutil de iluminação radial para profundidade 3D elegante
+        const radialLight = ctx.createRadialGradient(radius, radius, radius * 0.15, radius, radius, radius);
+        radialLight.addColorStop(0, "rgba(255, 255, 255, 0.16)");
+        radialLight.addColorStop(0.6, "rgba(255, 255, 255, 0.02)");
+        radialLight.addColorStop(1, "rgba(0, 0, 0, 0.07)");
+        ctx.fillStyle = radialLight;
+        ctx.fill();
+
+        // Linhas divisórias nítidas e elegantes entre as fatias
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
         ctx.stroke();
 
         // Se for a fatia vencedora em destaque, aplica brilho de vitória
@@ -1928,30 +1970,33 @@
           ctx.moveTo(radius, radius);
           ctx.arc(radius, radius, radius - 4, angle, angle + arc);
           ctx.lineTo(radius, radius);
-          ctx.fillStyle = "rgba(255, 255, 255, 0.32)";
+          ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
           ctx.fill();
-          ctx.lineWidth = 8;
+          ctx.lineWidth = 9;
           ctx.strokeStyle = "#facc15";
           ctx.shadowColor = "#facc15";
-          ctx.shadowBlur = 24;
+          ctx.shadowBlur = 26;
           ctx.stroke();
           ctx.restore();
         }
 
-        // Renderização dos textos em orientação horizontal perfeita
+        // Renderização dos textos sempre orientados para leitura natural (nunca de cabeça para baixo)
+        const midAngle = angle + arc / 2;
+        const normAngle = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const isBottomHalf = (normAngle > 0.05 && normAngle < Math.PI - 0.05);
+
         ctx.save();
         ctx.translate(radius, radius);
-        ctx.rotate(angle + arc / 2);
-        
+        ctx.rotate(midAngle);
         ctx.translate(radius * 0.62, 0);
-        ctx.rotate(Math.PI / 2);
+        ctx.rotate(isBottomHalf ? -Math.PI / 2 : Math.PI / 2);
 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "#ffffff";
         ctx.font = highlightIndex === i ? "900 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" : "900 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
-        ctx.shadowColor = highlightIndex === i ? "rgba(234, 179, 8, 0.9)" : "rgba(0, 0, 0, 0.65)";
-        ctx.shadowBlur = highlightIndex === i ? 12 : 6;
+        ctx.shadowColor = highlightIndex === i ? "rgba(234, 179, 8, 0.95)" : "rgba(0, 0, 0, 0.65)";
+        ctx.shadowBlur = highlightIndex === i ? 14 : 6;
         
         const label = sectors[i].label;
         if (label === "Emoções e Sentimentos") {
@@ -1977,6 +2022,13 @@
         }
         ctx.restore();
       }
+
+      // Borda sutil no contorno externo da roleta para arremate perfeito
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius - 1.5, 0, 2 * Math.PI);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.stroke();
     }
 
     drawWheel();
@@ -1997,10 +2049,11 @@
       // Feedback visual no Botão Central
       const hubBtn = document.getElementById("spinHubBtn");
       const hubText = document.getElementById("hubMainText");
-      const hubSub = document.getElementById("hubSubText");
-      if (hubBtn) hubBtn.classList.add("is-spinning");
+      if (hubBtn) {
+        hubBtn.classList.remove("idle-pulse");
+        hubBtn.classList.add("is-spinning");
+      }
       if (hubText) hubText.textContent = "Girando...";
-      if (hubSub) hubSub.textContent = "Aguarde...";
 
       // Vibração tátil no toque (se suportado no tablet)
       if (navigator.vibrate) {
@@ -2068,9 +2121,10 @@
 
       function finalizeSpin() {
         isSpinning = false;
-        if (hubBtn) hubBtn.classList.remove("is-spinning");
+        if (hubBtn) {
+          hubBtn.classList.remove("is-spinning");
+        }
         if (hubText) hubText.textContent = "Girar";
-        if (hubSub) hubSub.textContent = "Toque aqui";
 
         // Apaga luzes do chaser do aro
         rimStudElements.forEach(s => s.classList.remove("lit"));
@@ -2086,11 +2140,23 @@
         flashRimCelebration();
         drawWheel(sectorIndex);
 
-        // Aguarda 550ms para o participante ver e curtir a fatia sorteada antes da pergunta
+        // Vibração tátil sutil de conquista no tablet
+        if (navigator.vibrate) {
+          try { navigator.vibrate([40, 60, 80]); } catch (e) {}
+        }
+
+        // Aguarda com piscar luminoso no setor vencedor para o participante curtir o resultado antes da pergunta
         setTimeout(() => {
           drawWheel(-1);
-          openQuestionForTheme(selectedSector.label);
-        }, 550);
+          setTimeout(() => {
+            drawWheel(sectorIndex);
+            setTimeout(() => {
+              drawWheel(-1);
+              if (hubBtn) hubBtn.classList.add("idle-pulse");
+              openQuestionForTheme(selectedSector.label);
+            }, 300);
+          }, 140);
+        }, 360);
       }
 
       requestAnimationFrame(animate);
@@ -2436,6 +2502,8 @@
       consecutiveHits = 0;
       availableQuestions = [...allQuestions];
       updateScoreboard();
+      const hubBtn = document.getElementById("spinHubBtn");
+      if (hubBtn) hubBtn.classList.add("idle-pulse");
       if (manual) {
         closeQuestionModal();
         closePopup();
